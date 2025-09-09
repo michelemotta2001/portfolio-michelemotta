@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MONDO FUORI – Michele Motta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      background: #9C6B43; /* marrone scelto */
+      font-family: 'Helvetica Neue', sans-serif;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    /* TOP MENU come homepage (con comparsa su scroll) */
+    .top-menu {
+      position: fixed;
+      top: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .top-menu.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .top-menu-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      width: 100%;
+      max-width: 1000px;
+      padding: 0 80px;
+      font-weight: bold;
+      text-transform: lowercase;
+      font-size: 1rem;
+      color: black;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    .top-menu-grid div {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .top-menu-grid small {
+      font-size: 0.75rem;
+      font-weight: normal;
+      text-transform: none;
+      color: white;
+    }
+    .top-menu-grid div:first-child { text-align: left; }
+    .top-menu-grid div:last-child { text-align: right; }
+
+    /* LANGUAGE SWITCH */
+    .language-switch {
+      position: fixed;
+      top: 18px;
+      right: 30px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 101;
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: white;
+    }
+    .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background-color: transparent; border: 2px solid white; border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 18px; width: 18px; left: 4px; top: 2px;
+      background-color: white; transition: .4s; border-radius: 50%;
+    }
+    input:checked + .slider:before { transform: translateX(22px); }
+
+    /* PROJECT BAR (menu a tendina progetti) – identico alla homepage */
+    .project-bar {
+      display: none;
+      position: fixed;
+      top: 80px;
+      width: 100%;
+      justify-content: center;
+      padding: 20px 0;
+      z-index: 90;
+      gap: 40px;
+      background: transparent;
+    }
+    .project-bar a {
+      opacity: 0;
+      transform: translateY(-20px);
+      color: #111;
+      font-weight: bold;
+      font-size: 1.2rem;
+      text-decoration: none;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+    .project-bar.show a { opacity: 1; transform: translateY(0); }
+
+    /* nuove voci bianche + sottotitolo in corsivo */
+    .project-bar a.white-link { color: #fff; }
+    .project-bar a .subtitle { display:block; font-style: italic; font-size: 0.8rem; line-height: 1.2; }
+
+    /* GALLERY + TEXT SECTION */
+    .gallery-section { display: flex; align-items: flex-start; gap: 60px; padding: 120px 80px 100px; }
+    .image-column { flex: 1; display: flex; flex-direction: column; gap: 30px; padding-right: 20px; }
+    .image-column img { width: 100%; max-width: 600px; height: auto; object-fit: cover; border-radius: 8px; }
+    .text-column { flex: 1; position: sticky; top: 100px; align-self: flex-start; max-height: calc(100vh - 120px); overflow: hidden; color: black; }
+    .text-column h1, .text-column h2, .text-column p { margin: 0 0 20px 0; }
+    .text-column h1 { font-size: 3.5rem; font-weight: bold; color: black; text-transform: uppercase; }
+    .text-column h2 { font-size: 0.95rem; font-weight: normal; color: black; line-height: 1.6; }
+    .text-column p { font-size: 0.85rem; line-height: 1.8; animation: fadeInUp 0.8s ease forwards; opacity: 0; }
+    .text-column p:nth-of-type(1) { animation-delay: 0.5s; }
+    .text-column p:nth-of-type(2) { animation-delay: 1.5s; }
+    .text-column p:nth-of-type(3) { animation-delay: 2.5s; }
+    @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+    .buttons { display: flex; gap: 30px; margin-top: 40px; }
+    .buttons a { color: white; background: black; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold; }
+
+    @media (max-width: 900px) {
+      .gallery-section { flex-direction: column; padding: 80px 30px; }
+      .image-column img { max-width: 100%; }
+      .text-column { position: relative; top: 0; }
+    }
+
+    /* LINE UP */
+    .project-assets-lineup img {
+      width: 100%; max-width: 1200px; height: auto; object-fit: contain;
+      border-radius: 6px; box-shadow: 0 0 20px rgba(0,0,0,0.1); display: block; margin: 0 auto;
+    }
+    .project-assets-lineup h2 { font-size: 2.5rem; margin-bottom: 40px; color: black; text-align: center; }
+
+    /* TABS */
+    .section-tabs { padding: 40px 0; background-color: #9C6B43; }
+    .tab-carousel-container { display: flex; align-items: center; justify-content: center; gap: 10px; overflow: hidden; max-width: 100%; }
+    .tab-carousel { display: flex; overflow-x: auto; scroll-behavior: smooth; max-width: 85vw; }
+    .tab { flex: 0 0 auto; margin: 0 10px; padding: 10px 0; cursor: pointer; font-weight: bold; font-size: 1.1rem; color: black; border-bottom: 2px solid transparent; white-space: nowrap; }
+    .tab.active { opacity: 0.5; border-bottom: 2px solid black; }
+    .carousel-btn { background: none; border: none; font-size: 2rem; cursor: pointer; color: black; }
+    .tab-content { padding: 40px 0 80px; background-color: #9C6B43; }
+
+    .vertical-gallery {
+      display: flex; flex-direction: column; align-items: center; gap: 30px;
+      padding: 0 80px; color: black; font-size: 0.95rem; line-height: 1.6;
+    }
+    .vertical-gallery img { width: 100%; max-width: 800px; height: auto; border-radius: 6px; }
+
+    @media (max-width: 768px) {
+      .tab-carousel { max-width: 90vw; }
+      .vertical-gallery { padding: 0 30px; }
+    }
+
+    /* ============ CONTATTI (identico homepage, colore progetto) ============ */
+    .contacts-backdrop{
+      position:fixed; inset:0; z-index:109;
+      background:rgba(0,0,0,.35);
+      backdrop-filter:blur(4px);
+      opacity:0; pointer-events:none; transition:opacity .35s ease;
+    }
+    .contacts-backdrop.show{ opacity:1; pointer-events:auto; }
+
+    .contacts-panel{
+      position:fixed; top:0; right:0; height:100vh;
+      width:min(520px,50vw);
+      background:#9C6B43; /* ← colore Mondo Fuori */
+      color:#000;
+      box-shadow:-24px 0 48px rgba(0,0,0,.22);
+      transform:translateX(100%);
+      transition:transform .4s ease;
+      z-index:110;
+      display:flex; flex-direction:column;
+      padding:28px 26px;
+    }
+    .contacts-panel.show{ transform:translateX(0); }
+
+    .contacts-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+    .contacts-title{font-family:'Anton',sans-serif;font-size:1.6rem;text-transform:uppercase;letter-spacing:.5px;}
+    .contacts-close{background:none;border:none;font-size:1.8rem;line-height:1;cursor:pointer;color:#000;}
+
+    .contacts-list{
+      display:flex;flex-direction:column;gap:14px;margin-top:10px;align-items:flex-end;
+    }
+    .contact-item{
+      display:flex;align-items:center;gap:12px;justify-content:flex-end;
+      opacity:0; transform: translateX(16px);
+    }
+    .contact-item.in{
+      opacity:1; transform:none; transition: opacity .35s ease, transform .35s ease;
+    }
+    .contact-label{
+      font-size:0.92rem;
+      font-weight:bold;
+      color:#000; text-decoration:none;
+    }
+    .contact-label:hover{ text-decoration:underline; }
+
+    .icon-circle{
+      width:40px;height:40px;border-radius:50%;
+      background:#9C6B43;        /* ← colore Mondo Fuori */
+      border:2px solid white;     /* solo contorno bianco */
+      display:inline-flex;align-items:center;justify-content:center;
+      flex:0 0 40px;
+    }
+    .icon-circle svg{width:20px;height:20px;fill:#000;display:block;}
+
+    .contacts-close:focus,
+    .contact-label:focus{ outline:2px dotted #fff; outline-offset:2px; }
+  </style>
+</head>
+<body>
+
+<!-- LANGUAGE TOGGLE -->
+<div class="language-switch">
+  <span>IT</span>
+  <label class="switch">
+    <input type="checkbox" id="langToggle">
+    <span class="slider"></span>
+  </label>
+  <span>EN</span>
+</div>
+
+<!-- TOP MENU (come homepage) -->
+<div id="mainNav" class="top-menu">
+  <div class="top-menu-grid">
+    <div onclick="goAbout()">
+      <span data-it="informazioni" data-en="about">informazioni</span>
+      <small data-it="about me" data-en="about me">about me</small>
+    </div>
+    <div>
+      <span onclick="toggleProjectBar()" data-it="progetti" data-en="works" style="display:inline-block; width: 80px;">progetti</span>
+      <small data-it="i miei lavori" data-en="some cases">i miei lavori</small>
+    </div>
+    <div>
+      <span data-it="contatti" data-en="contact me" onclick="openContacts()">contatti</span>
+      <small data-it="per collaborazioni" data-en="for collaborations">per collaborazioni</small>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT BAR (identica alla homepage, con tre voci bianche e sottotitoli) -->
+<div id="projectBar" class="project-bar">
+  <a href="./titina.html">Titina (Tesi)</a>
+  <a href="./mondo-fuori.html">Mondo Fuori</a>
+  <a href="./luddovio.html">Luddovio</a>
+  <a href="./gettin-busy.html">Gettin’ Busy</a>
+
+  <a class="white-link" href="./numero-magazine.html">
+    Numero Magazine <span class="subtitle">proposta</span>
+  </a>
+  <a class="white-link" href="./italian-realism.html">
+    Italian Realism <span class="subtitle">editoriale</span>
+  </a>
+  <a class="white-link" href="./gentleman-oliviero-toscani.html">
+    Gentleman, Oliviero Toscani <span class="subtitle">editoriale</span>
+  </a>
+</div>
+
+<!-- GALLERY + TEXT SECTION -->
+<section class="gallery-section">
+  <div class="image-column" id="imageScroll">
+    <img src="https://i.postimg.cc/QxSG7GBt/IMG-2719.jpg" alt="Mondo Fuori 1">
+    <img src="https://i.postimg.cc/FFyQ9JN0/IMG-2720.jpg" alt="Mondo Fuori 2">
+    <img src="https://i.postimg.cc/1XQhGycg/IMG-2722.jpg" alt="Mondo Fuori 3">
+    <img src="https://i.postimg.cc/br9XL43m/IMG-2721.jpg" alt="Mondo Fuori 4">
+  </div>
+
+  <div class="text-column">
+    <h1 data-it="MONDO FUORI" data-en="MONDO FUORI">MONDO FUORI</h1>
+
+    <h2 data-it="Laboratorio di sintesi finale – Knitwear Design<br>Politecnico di Milano – A.A. 2023/2024<br><br>In collaborazione con: Pasquale Lanzilotti, Luciana d’Angelo, Vinicio Caforio, Francesca Boletti, Margarida Almeida<br>Docenti: Giovanni Maria Conti, Luigi de Nardo, Laura Affinito, Martina Motta, Manuela Rubertelli, Laura Vicelli<br>Tutor: Anna Paola Braga, Diego Dani, Federica Mora, Irene Sapuppo"
+        data-en="Final Synthesis Lab – Knitwear Design<br>Politecnico di Milano – Academic Year 2023/2024<br><br>In collaboration with: Pasquale Lanzilotti, Luciana d’Angelo, Vinicio Caforio, Francesca Boletti, Margarida Almeida<br>Professors: Giovanni Maria Conti, Luigi de Nardo, Laura Affinito, Martina Motta, Manuela Rubertelli, Laura Vicelli<br>Tutors: Anna Paola Braga, Diego Dani, Federica Mora, Irene Sapuppo">
+      Laboratorio di sintesi finale – Knitwear Design<br>Politecnico di Milano – A.A. 2023/2024<br><br>
+      In collaborazione con: Pasquale Lanzilotti, Luciana d’Angelo, Vinicio Caforio, Francesca Boletti, Margarida Almeida<br>
+      Docenti: Giovanni Maria Conti, Luigi de Nardo, Laura Affinito, Martina Motta, Manuela Rubertelli, Laura Vicelli<br>
+      Tutor: Anna Paola Braga, Diego Dani, Federica Mora, Irene Sapuppo
+    </h2>
+
+    <p data-it="Il progetto “Mondo Fuori” nasce come riflessione sul concetto di confine, di pelle e di protezione. Attraverso l’utilizzo di superfici tattili e trattamenti sperimentali, il gruppo ha esplorato il linguaggio della maglieria per tradurre in forma materica emozioni e tensioni contemporanee."
+       data-en="The project “Mondo Fuori” was born as a reflection on the concept of boundary, skin, and protection. Through the use of tactile surfaces and experimental treatments, the group explored knitwear language to translate contemporary emotions and tensions into material form.">
+      Il progetto “Mondo Fuori” nasce come riflessione sul concetto di confine, di pelle e di protezione. Attraverso l’utilizzo di superfici tattili e trattamenti sperimentali, il gruppo ha esplorato il linguaggio della maglieria per tradurre in forma materica emozioni e tensioni contemporanee.
+    </p>
+
+    <p data-it="La collezione è composta da 8 outfit ed è stata sviluppata in collaborazione con l’Istituto dei Ciechi di Milano. L’obiettivo è quello di andare oltre la percezione visiva, ponendo massima attenzione alla percezione tattile attraverso lavorazioni che raccontano il mondo naturale."
+       data-en="The collection is composed of 8 outfits and was developed in collaboration with the Institute for the Blind of Milan. The goal was to go beyond visual perception, focusing on tactile sensations through textures that narrate the natural world.">
+      La collezione è composta da 8 outfit ed è stata sviluppata in collaborazione con l’Istituto dei Ciechi di Milano. L’obiettivo è quello di andare oltre la percezione visiva, ponendo massima attenzione alla percezione tattile attraverso lavorazioni che raccontano il mondo naturale.
+    </p>
+
+    <p data-it="Il concept si sviluppa come un viaggio sensoriale: si parte dalle superfici rocciose delle montagne, si attraversano i boschi e le campagne, per poi arrivare alla sabbia e al mare. Gli elementi incontrati lungo il cammino sono stati reinterpretati in chiave materica per diventare punti maglia."
+       data-en="The concept unfolds as a sensorial journey: from rocky mountain textures through forests and countryside, reaching the sand and the sea. Elements encountered along the path were reinterpreted through tactile experimentation to become knit stitches.">
+      Il concept si sviluppa come un viaggio sensoriale: si parte dalle superfici rocciose delle montagne, si attraversano i boschi e le campagne, per poi arrivare alla sabbia e al mare. Gli elementi incontrati lungo il cammino sono stati reinterpretati in chiave materica per diventare punti maglia.
+    </p>
+
+    <div class="buttons">
+      <a href="luddovio.html" data-it="Progetto successivo" data-en="Next project">Progetto successivo</a>
+      <a href="index.html" data-it="Torna alla homepage" data-en="Back to homepage">Torna alla homepage</a>
+    </div>
+  </div>
+</section>
+
+<!-- LINE UP -->
+<section class="project-assets-lineup">
+  <h2>LINE UP</h2>
+  <img src="https://i.postimg.cc/P5ZJh53c/IMG-2836.png" alt="Line Up">
+</section>
+
+<!-- BLOCCO NAV ORIZZONTALE -->
+<section class="section-tabs">
+  <div class="tab-carousel-container">
+    <button class="carousel-btn left" onclick="scrollTabs(-1)">&#10094;</button>
+    <div class="tab-carousel" id="tabCarousel">
+      <div class="tab" onclick="openPanel('moodboard')" id="defaultTab">MOODBOARD</div>
+      <div class="tab" onclick="openPanel('outfit')">OUTFIT</div>
+      <div class="tab" onclick="openPanel('schede')">SCHEDE TECNICHE</div>
+      <div class="tab" onclick="openPanel('shooting')">SHOOTING</div>
+      <div class="tab" onclick="openPanel('filati')">FILATI</div>
+    </div>
+    <button class="carousel-btn right" onclick="scrollTabs(1)">&#10095;</button>
+  </div>
+</section>
+
+<!-- PANNELLO MOODBOARD -->
+<section class="tab-content" id="moodboardPanel" style="display: block;">
+  <div class="vertical-gallery">
+    <img src="https://i.postimg.cc/HsrjZ2QT/IMG-2835.png" alt="Moodboard">
+  </div>
+</section>
+
+<!-- PANNELLO OUTFIT -->
+<section class="tab-content" id="outfitPanel" style="display: none;">
+  <div class="vertical-gallery">
+    <img src="https://i.postimg.cc/mg8LT13m/IMG-2726.jpg" alt="Outfit 1">
+    <img src="https://i.postimg.cc/d03q3Q4w/IMG-2727.jpg" alt="Outfit 2">
+    <img src="https://i.postimg.cc/J4QmQHFR/IMG-2728.jpg" alt="Outfit 3">
+    <img src="https://i.postimg.cc/3NXhVkJC/IMG-2729.jpg" alt="Outfit 4">
+    <img src="https://i.postimg.cc/gjFdgVd2/IMG-2730.jpg" alt="Outfit 5">
+    <img src="https://i.postimg.cc/tTVpdrKc/IMG-2731.jpg" alt="Outfit 6">
+    <img src="https://i.postimg.cc/s2L3hFNS/IMG-2732.jpg" alt="Outfit 7">
+    <img src="https://i.postimg.cc/NGmQ5z79/IMG-2733.jpg" alt="Outfit 8">
+  </div>
+</section>
+
+<!-- PANNELLO SCHEDE TECNICHE -->
+<section class="tab-content" id="schedePanel" style="display: none;">
+  <div class="vertical-gallery">
+    <img src="https://i.postimg.cc/15Ss6rJW/IMG-2734.jpg" alt="Scheda 1">
+    <img src="https://i.postimg.cc/4xNG2NCV/IMG-2735.jpg" alt="Scheda 2">
+    <img src="https://i.postimg.cc/kg1m039Z/IMG-2736.jpg" alt="Scheda 3">
+    <img src="https://i.postimg.cc/q7NT0bv7/IMG-2737.jpg" alt="Scheda 4">
+    <img src="https://i.postimg.cc/jjBrjHD4/IMG-2738.jpg" alt="Scheda 5">
+  </div>
+</section>
+
+<!-- PANNELLO SHOOTING -->
+<section class="tab-content" id="shootingPanel" style="display: none;">
+  <div class="vertical-gallery">
+    <img src="https://i.postimg.cc/br9XL43m/IMG-2721.jpg" alt="Outfit 1">
+    <img src="https://i.postimg.cc/bvDK4ZmD/IMG-2742.jpg" alt="Outfit 2">
+    <img src="https://i.postimg.cc/FFyQ9JN0/IMG-2720.jpg" alt="Outfit 3">
+    <img src="https://i.postimg.cc/QxSG7GBt/IMG-2719.jpg" alt="Outfit 4">
+    <img src="https://i.postimg.cc/1XQhGycg/IMG-2722.jpg" alt="Outfit 5">
+    <img src="https://i.postimg.cc/m2TWh2gJ/IMG-2739.jpg" alt="Outfit 6">
+    <img src="https://i.postimg.cc/JzdfTN5C/IMG-2741.jpg" alt="Outfit 7">
+    <img src="https://i.postimg.cc/NjMh7JTx/IMG-2740.jpg" alt="Outfit 8">
+  </div>
+</section>
+
+<!-- PANNELLO FILATI -->
+<section class="tab-content" id="filatiPanel" style="display: none;">
+  <div class="vertical-gallery">
+    <p style="text-align: center; max-width: 800px;"
+       data-it="I filati selezionati per questa collezione rappresentano un equilibrio tra tradizione artigianale, sperimentazione tattile e sostenibilità. Dalla lana vergine al cashmere, passando per misti tecnici e fibre naturali, ogni filato è stato scelto per esprimere al meglio la sensazione del paesaggio a cui si ispira."
+       data-en="The yarns selected for this collection represent a balance between craftsmanship, tactile experimentation and sustainability. From virgin wool to cashmere, through technical blends and natural fibers, each yarn was chosen to best convey the feeling of the landscape that inspired it.">
+      I filati selezionati per questa collezione rappresentano un equilibrio tra tradizione artigianale,
+      sperimentazione tattile e sostenibilità. Dalla lana vergine al cashmere, passando per misti tecnici
+      e fibre naturali, ogni filato è stato scelto per esprimere al meglio la sensazione del paesaggio
+      a cui si ispira.
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 30px; width: 100%; max-width: 1200px; margin-top: 40px; text-align: left;">
+      <div>
+        <strong data-it="marrone panta" data-en="brown panta">marrone panta</strong><br>
+        Zegna Baruffa – NM 2/48000<br><span data-it="100% lana vergine" data-en="100% virgin wool">100% lana vergine</span><br><br>
+        <strong data-it="marrone 1" data-en="brown 1">marrone 1</strong><br>
+        NM 2/50000<br><span data-it="100% lana" data-en="100% wool">100% lana</span><br><br>
+        <strong data-it="marrone 2 (in uni)" data-en="brown 2 (uni)">marrone 2 (in uni)</strong><br>
+        Zegna Baruffa – NM 2/48000<br><span data-it="100% lana vergine" data-en="100% virgin wool">100% lana vergine</span><br><br>
+        <strong data-it="bianco bouclé" data-en="white bouclé">bianco bouclé</strong><br>
+        NM 2/16000<br><span data-it="50% cotone, 50% poliestere" data-en="50% cotton, 50% polyester">50% cotone, 50% poliestere</span><br><br>
+        <strong data-it="neve fresca" data-en="fresh snow">neve fresca</strong><br>
+        Mondial – NM 5000<br><span data-it="80% lana merino, 20% microfibra" data-en="80% merino wool, 20% microfiber">80% lana merino, 20% microfibra</span><br><br>
+        <strong>sottobosco</strong><br>
+        Zegna Baruffa – NM 2/48000<br><span data-it="100% lana vergine" data-en="100% virgin wool">100% lana vergine</span>
+      </div>
+
+      <div>
+        <strong>sottobosco</strong><br>
+        NM 2/48000<br><span data-it="100% lana" data-en="100% wool">100% lana</span><br><br>
+        <strong>cellulosa</strong><br>
+        NM 1250<br><span data-it="100% cellulosa" data-en="100% cellulose">100% cellulosa</span><br><br>
+        <strong data-it="melange marrone maglietta" data-en="brown melange t-shirt">melange marrone maglietta</strong><br>
+        NM 2/50000<br><span data-it="100% cotone" data-en="100% cotton">100% cotone</span><br><br>
+        <strong>Lanari</strong><br>
+        NM 10000<br><span data-it="80% skid mohair, 20% poliammide" data-en="80% skid mohair, 20% polyamide">80% skid mohair, 20% poliammide</span><br><br>
+        <strong>Filart</strong><br>
+        NM 40000<br><span data-it="100% cotone" data-en="100% cotton">100% cotone</span><br><br>
+        <strong>Cariaggi</strong><br>
+        NM 2/28000<br><span data-it="100% cashmere" data-en="100% cashmere">100% cashmere</span>
+      </div>
+
+      <div>
+        <strong>Fullonica SNC</strong><br>
+        NM 2/60000<br><span data-it="100% lana" data-en="100% wool">100% lana</span><br><br>
+        <strong>Gruppo Filpucci</strong><br>
+        NM 40000<br><span data-it="100% cotone" data-en="100% cotton">100% cotone</span><br><br>
+        <strong>Prisma Ricerche</strong><br>
+        NM 2/35<br><span data-it="83% viscosa, 17% poliestere" data-en="83% viscose, 17% polyester">83% viscosa, 17% poliestere</span><br><br>
+        <strong>Lafil</strong><br>
+        NM 44000<br><span data-it="100% poliestere" data-en="100% polyester">100% poliestere</span><br><br>
+        <strong>Manifatture Tessili Biellesi</strong><br>
+        NM 4/1000000<br><span data-it="100% cotone" data-en="100% cotton">100% cotone</span><br><br>
+        <strong>NM 40000</strong><br><span data-it="100% cotone" data-en="100% cotton">100% cotone</span>
+      </div>
+
+      <div>
+        <strong>NM 38000</strong><br>
+        <span data-it="7% elastomero, 83% poliammide" data-en="7% elastomer, 83% polyamide">7% elastomero, 83% poliammide</span><br><br>
+        <strong>Kypritzu</strong><br>
+        NM 60000<br><span data-it="100% poliestere" data-en="100% polyester">100% poliestere</span><br><br>
+        <strong>NM 40000</strong><br>
+        <span data-it="50% poliestere, 50% cotone" data-en="50% polyester, 50% cotton">50% poliestere, 50% cotone</span><br><br>
+        <strong>Lurex</strong><br>
+        NM 65000<br><span data-it="100% poliestere" data-en="100% polyester">100% poliestere</span><br><br>
+        <strong>NM 44000</strong><br>
+        <span data-it="100% poliestere" data-en="100% polyester">100% poliestere</span><br><br>
+        <strong>Lineapiù Italia S.P.A.</strong><br>
+        NM 16000<br><span data-it="100% cotone" data-en="100% cotton">100% cotone</span><br><br>
+        <strong>Cariaggi</strong><br>
+        NM 2/56000<br><span data-it="70% cashmere, 30% seta" data-en="70% cashmere, 30% silk">70% cashmere, 30% seta</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== CONTATTI: backdrop + pannello ====== -->
+<div id="contactsBackdrop" class="contacts-backdrop" onclick="closeContacts()" aria-hidden="true"></div>
+
+<aside id="contactsPanel" class="contacts-panel" aria-hidden="true" role="dialog" aria-labelledby="contactsTitle">
+  <div class="contacts-header">
+    <div id="contactsTitle" class="contacts-title" data-it="Contatti" data-en="Contacts">Contatti</div>
+    <button class="contacts-close" aria-label="Chiudi" onclick="closeContacts()">×</button>
+  </div>
+
+  <div class="contacts-list" id="contactsList">
+    <!-- Telefono -->
+    <div class="contact-item">
+      <a class="contact-label" href="tel:+393465288836">+39 346 528 8836</a>
+      <span class="icon-circle" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.03-.24c1.12.37 2.33.57 3.56.57a1 1 0 011 1V21a1 1 0 01-1 1C10.3 22 2 13.7 2 3a1 1 0 011-1h3.5a1 1 0 011 1c0 1.23.2 2.44.57 3.56a1 1 0 01-.24 1.03l-2.2 2.2z"/></svg>
+      </span>
+    </div>
+
+    <!-- Gmail -->
+    <div class="contact-item">
+      <a class="contact-label" href="mailto:michelemotta2001@gmail.com">michelemotta2001@gmail.com</a>
+      <span class="icon-circle" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      </span>
+    </div>
+
+    <!-- LinkedIn -->
+    <div class="contact-item">
+      <a class="contact-label" href="http://linkedin.com/in/michele-motta-a1885b266" target="_blank" rel="noopener">LinkedIn</a>
+      <span class="icon-circle" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M6.94 21H3.56V8.59h3.38V21zM5.25 7.06a1.96 1.96 0 110-3.92 1.96 1.96 0 010 3.92zM21 21h-3.37v-6.45c0-1.54-.03-3.51-2.14-3.51-2.14 0-2.47 1.67-2.47 3.4V21h-3.37V8.59h3.24v1.69h.05c.45-.86 1.56-1.77 3.22-1.77 3.45 0 4.09 2.27 4.09 5.22V21z"/></svg>
+      </span>
+    </div>
+
+    <!-- Instagram -->
+    <div class="contact-item">
+      <a class="contact-label" href="https://www.instagram.com/_michelemotta_?igsh=bmZsZHRjdGhnNWw0" target="_blank" rel="noopener">@_michelemotta_</a>
+      <span class="icon-circle" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 7a5 5 0 105 5 5 5 0 00-5-5zm0 8.2A3.2 3.2 0 118.8 12 3.2 3.2 0 0112 15.2z"/><path d="M17.8 2H6.2A4.2 4.2 0 002 6.2v11.6A4.2 4.2 0 006.2 22h11.6a4.2 4.2 0 004.2-4.2V6.2A4.2 4.2 0 0017.8 2zm2.4 15.8a2.4 2.4 0 01-2.4 2.4H6.2a2.4 2.4 0 01-2.4-2.4V6.2A2.4 2.4 0 016.2 3.8h11.6a2.4 2.4 0 012.4 2.4z"/><circle cx="17.5" cy="6.5" r="1.2"/></svg>
+      </span>
+    </div>
+  </div>
+</aside>
+
+<!-- SCRIPT -->
+<script>
+  /* --- Tabs --- */
+  function openPanel(panelId) {
+    document.querySelectorAll('.tab-content').forEach(panel => panel.style.display = 'none');
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    document.getElementById(panelId + 'Panel').style.display = 'block';
+    const tab = Array.from(document.querySelectorAll('.tab')).find(el => el.textContent.toLowerCase().includes(panelId));
+    if (tab) tab.classList.add('active');
+  }
+  function scrollTabs(direction) {
+    const container = document.getElementById('tabCarousel');
+    container.scrollLeft += direction * 150;
+  }
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("defaultTab").click();
+  });
+
+  /* --- Switch lingua --- */
+  document.getElementById("langToggle").addEventListener("change", function () {
+    const lang = this.checked ? "en" : "it";
+    document.querySelectorAll("[data-it]").forEach(el => { el.innerHTML = el.dataset[lang]; });
+    // aggiorna anche titolo pannello contatti
+    const ct=document.getElementById('contactsTitle');
+    if(ct && ct.dataset[lang]) ct.textContent=ct.dataset[lang];
+  });
+
+  /* --- Menu come homepage --- */
+  const nav = document.getElementById("mainNav");
+  const projectBar = document.getElementById("projectBar");
+  const projectLinks = projectBar.querySelectorAll("a");
+  let navShown = false;
+  let barOpen = false;
+
+  function goAbout() { location.href = 'index.html#about'; }
+
+  function toggleProjectBar() {
+    if (barOpen) {
+      projectBar.classList.remove("show");
+      projectLinks.forEach(link => {
+        link.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+        link.style.opacity = 0;
+        link.style.transform = "translateY(-20px)";
+      });
+      setTimeout(() => { projectBar.style.display = "none"; }, 400);
+    } else {
+      projectBar.style.display = "flex";
+      setTimeout(() => {
+        projectLinks.forEach((link, i) => {
+          link.style.transition = `opacity 0.4s ease ${i * 0.1}s, transform 0.4s ease ${i * 0.1}s`;
+          link.style.opacity = 1;
+          link.style.transform = "translateY(0)";
+        });
+        projectBar.classList.add("show");
+      }, 10);
+    }
+    barOpen = !barOpen;
+  }
+  window.toggleProjectBar = toggleProjectBar;
+
+  // Mostra menu al primo scroll
+  window.addEventListener("scroll", () => {
+    if (!navShown && window.scrollY > 30) {
+      nav.classList.add("visible");
+      navShown = true;
+    }
+  });
+
+  // Chiudi solo se click fuori sia da top-menu che dal projectBar
+  window.addEventListener("click", function(e) {
+    if (!e.target.closest('.top-menu') && !e.target.closest('#projectBar')) {
+      projectBar.classList.remove("show");
+      barOpen = false;
+      projectLinks.forEach(link => {
+        link.style.opacity = 0;
+        link.style.transform = "translateY(-20px)";
+      });
+      setTimeout(() => { projectBar.style.display = "none"; }, 400);
+    }
+  });
+
+  // Evita chiusura immediata quando si cliccano i link del menu
+  projectBar.addEventListener('click', function(e){
+    const a = e.target.closest('a');
+    if (a) e.stopPropagation();
+  });
+
+  /* ============ CONTATTI: logica apertura/chiusura + stagger ============ */
+  const contactsBackdrop = document.getElementById('contactsBackdrop');
+  const contactsPanel    = document.getElementById('contactsPanel');
+  const contactsList     = document.getElementById('contactsList');
+
+  function openContacts(){
+    contactsBackdrop.classList.add('show');
+    contactsPanel.classList.add('show');
+    contactsPanel.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+    const items=[...contactsList.querySelectorAll('.contact-item')];
+    items.forEach(i=>i.classList.remove('in'));
+    items.forEach((item,idx)=>{ setTimeout(()=>item.classList.add('in'), 120*idx); });
+  }
+  function closeContacts(){
+    contactsBackdrop.classList.remove('show');
+    contactsPanel.classList.remove('show');
+    contactsPanel.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+    contactsList.querySelectorAll('.contact-item').forEach(i=>i.classList.remove('in'));
+  }
+  window.openContacts=openContacts;
+  window.closeContacts=closeContacts;
+
+  window.addEventListener('keydown',(e)=>{ if(e.key==='Escape') closeContacts(); });
+</script>
+
+</body>
+</html>

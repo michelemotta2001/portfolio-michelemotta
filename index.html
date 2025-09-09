@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Michele Motta – Portfolio</title>
+  <base href="./">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+  <style>
+    /* ================== BASE ================== */
+    body {
+      margin: 0;
+      background: #B6CA60;
+      font-family: 'Helvetica Neue', sans-serif;
+      color: #111;
+      overflow-x: hidden;
+    }
+
+    /* ================== TOP MENU ================== */
+    .top-menu {
+      position: fixed;
+      top: 20px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .top-menu.visible { opacity: 1; pointer-events: auto; }
+
+    .top-menu-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      width: 100%;
+      max-width: 1000px;
+      padding: 0 80px;
+      font-weight: bold;
+      text-transform: lowercase;
+      font-size: 1rem;
+      color: black;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    .top-menu-grid div {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .top-menu-grid small {
+      font-size: 0.75rem;
+      font-weight: normal;
+      opacity: 1;
+      text-transform: none;
+      color: white;
+    }
+    .top-menu-grid div:first-child { text-align: left; }
+    .top-menu-grid div:last-child  { text-align: right; }
+
+    /* ================== LANGUAGE SWITCH ================== */
+    .language-switch {
+      position: fixed;
+      top: 18px;
+      right: 30px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 101;
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: white;
+    }
+    .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background-color: transparent; border: 2px solid white; border-radius: 34px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 18px; width: 18px; left: 4px; top: 2px;
+      background-color: white; transition: .4s; border-radius: 50%;
+    }
+    input:checked + .slider:before { transform: translateX(22px); }
+
+    /* ================== PROJECT BAR ================== */
+    .project-bar {
+      display: none;
+      position: fixed;
+      top: 80px;
+      width: 100%;
+      justify-content: center;
+      padding: 20px 0;
+      z-index: 90;
+      gap: 40px;
+    }
+    .project-bar a {
+      opacity: 0;
+      transform: translateY(-20px);
+      color: #111;
+      font-weight: bold;
+      font-size: 1.2rem;
+      text-decoration: none;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+    .project-bar.show a { opacity: 1; transform: translateY(0); }
+
+    /* Nuove voci bianche + sottotitoli in corsivo sotto */
+    .project-bar a.white-link { color: #fff; }
+    .project-bar a .subtitle { display:block; font-style: italic; font-size: 0.8rem; line-height: 1.2; }
+
+    /* ================== HERO ================== */
+    .hero-wrapper {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .hero-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      gap: 80px;
+    }
+    .hero-container img {
+      height: 500px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .name {
+      font-family: 'Anton', sans-serif;
+      font-size: 5rem;
+      font-weight: 400;
+      text-transform: uppercase;
+      display: flex;
+    }
+    .letter { opacity: 0; animation: fadeIn 0.6s ease forwards; }
+    .letter:nth-child(1) { animation-delay: 0.1s; }
+    .letter:nth-child(2) { animation-delay: 0.2s; }
+    .letter:nth-child(3) { animation-delay: 0.3s; }
+    .letter:nth-child(4) { animation-delay: 0.4s; }
+    .letter:nth-child(5) { animation-delay: 0.5s; }
+    .letter:nth-child(6) { animation-delay: 0.6s; }
+    .letter:nth-child(7) { animation-delay: 0.7s; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .michele { position: absolute; right: calc(50% + 330px); bottom: 50%; transform: translateY(50%); }
+    .motta   { position: absolute; left:  calc(50% + 330px); top: 50%; transform: translateY(50%); }
+
+    .tagline {
+      position: absolute;
+      right: calc(50% + 330px);
+      top: calc(50% + 60px);
+      width: 240px;
+      text-align: right;
+    }
+    .tagline .title { font-weight: bold; font-size: 1rem; text-transform: lowercase; color: white; }
+    .tagline .desc  { font-size: 0.75rem; font-weight: normal; text-transform: none; opacity: 0.8; line-height: 1.4; color: #111; }
+
+    /* ================== ABOUT ================== */
+    .about-me {
+      background-color: #B6CA60;
+      padding: 60px 80px;
+      display: flex;
+      gap: 60px;
+      align-items: flex-start;
+    }
+    .about-me img { max-height: 500px; border-radius: 8px; }
+
+    .about-text { font-weight: bold; font-size: 1rem; text-transform: lowercase; color: white; }
+    .about-text h2 {
+      font-weight: bold; font-size: 3rem; text-transform: lowercase; color: black;
+      transform: translateX(-50px); animation: slideInLeft 0.8s ease forwards;
+    }
+    .animated-paragraph span {
+      display: block; opacity: 0; transform: translateX(50px);
+      animation: slideInRight 0.7s ease forwards; animation-delay: var(--delay, 0s);
+    }
+    .animated-paragraph span:nth-child(1) { --delay: 0.2s; }
+    .animated-paragraph span:nth-child(2) { --delay: 0.4s; }
+    .animated-paragraph span:nth-child(3) { --delay: 0.6s; }
+    .animated-paragraph span:nth-child(4) { --delay: 0.8s; }
+    .animated-paragraph span:nth-child(5) { --delay: 1s; }
+    .animated-paragraph span:nth-child(6) { --delay: 1.2s; }
+    .animated-paragraph span:nth-child(7) { --delay: 1.4s; }
+    .animated-paragraph span:nth-child(8) { --delay: 1.6s; }
+    @keyframes slideInLeft  { to { opacity: 1; transform: translateX(0); } }
+    @keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }
+
+    @media(max-width: 768px) {
+      .hero-container { flex-direction: column; gap: 40px; }
+      .michele, .motta, .tagline { position: static; transform: none; text-align: center; }
+      .hero-container img { height: 300px; }
+      .name { font-size: 3rem; justify-content: center; }
+      .language-switch { top: 70px; right: 10px; }
+      .tagline { margin-top: -20px; padding: 0 20px; width: auto; }
+      .about-me { flex-direction: column; padding: 40px 20px; }
+      .about-me img { width: 100%; height: auto; }
+    }
+
+    .slide-in-left  { opacity: 0; transform: translateX(-50px); animation: slideInLeft 0.6s ease forwards; }
+    .slide-in-right { display: block; opacity: 0; transform: translateX(50px);  animation: slideInRight 0.7s ease forwards; animation-delay: var(--delay, 0s); }
+
+    /* ================== CONTATTI (pannello) ================== */
+    .contacts-backdrop{
+      position:fixed; inset:0; z-index:109;
+      background:rgba(0,0,0,.35);
+      backdrop-filter:blur(4px);
+      opacity:0; pointer-events:none; transition:opacity .35s ease;
+    }
+    .contacts-backdrop.show{ opacity:1; pointer-events:auto; }
+
+    .contacts-panel{
+      position:fixed; top:0; right:0; height:100vh;
+      width:min(520px,50vw);
+      background:#B6CA60; /* coerenza cromatica */
+      color:#000;
+      box-shadow:-24px 0 48px rgba(0,0,0,.22);
+      transform:translateX(100%);
+      transition:transform .4s ease;
+      z-index:110;
+      display:flex; flex-direction:column;
+      padding:28px 26px;
+    }
+    .contacts-panel.show{ transform:translateX(0); }
+
+    .contacts-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+    .contacts-title{font-family:'Anton',sans-serif;font-size:1.6rem;text-transform:uppercase;letter-spacing:.5px;}
+    .contacts-close{background:none;border:none;font-size:1.8rem;line-height:1;cursor:pointer;color:#000;}
+
+    .contacts-list{
+      display:flex;flex-direction:column;gap:14px;margin-top:10px;align-items:flex-end;
+    }
+    .contact-item{
+      display:flex;align-items:center;gap:12px;justify-content:flex-end;
+      opacity:0; transform: translateX(16px);
+    }
+    /* Transizioni una-alla-volta: la classe .in viene aggiunta in JS con ritardo crescente */
+    .contact-item.in{
+      opacity:1; transform:none; transition: opacity .35s ease, transform .35s ease;
+    }
+    .contact-label{
+      font-size:0.92rem; /* un filo più piccolo */
+      font-weight:bold;
+      color:#000; text-decoration:none;
+    }
+    .contact-label:hover{ text-decoration:underline; }
+
+    .icon-circle{
+      width:40px;height:40px;border-radius:50%;
+      background:#B6CA60; /* verde homepage */
+      border:2px solid white;
+      display:inline-flex;align-items:center;justify-content:center;
+      flex:0 0 40px;
+    }
+    .icon-circle svg{width:20px;height:20px;fill:#000;display:block;}
+
+    /* Accessibilità focus */
+    .contacts-close:focus,
+    .contact-label:focus{ outline:2px dotted #fff; outline-offset:2px; }
+  </style>
+</head>
+<body>
+
+<!-- Language Switch -->
+<div class="language-switch">
+  <span>IT</span>
+  <label class="switch">
+    <input type="checkbox" id="langToggle">
+    <span class="slider"></span>
+  </label>
+  <span>EN</span>
+</div>
+
+<!-- Top Menu -->
+<div id="mainNav" class="top-menu">
+  <div class="top-menu-grid">
+    <div onclick="scrollToSection('about')">
+      <span data-it="informazioni" data-en="about">informazioni</span>
+      <small data-it="about me" data-en="about me">about me</small>
+    </div>
+    <div>
+      <span onclick="toggleProjectBar()" data-it="progetti" data-en="works" style="display:inline-block; width: 80px;">progetti</span>
+      <small data-it="i miei lavori" data-en="some cases">i miei lavori</small>
+    </div>
+    <div>
+      <span data-it="contatti" data-en="contact me" onclick="openContacts()">contatti</span>
+      <small data-it="per collaborazioni" data-en="for any collaborations">per collaborazioni</small>
+    </div>
+  </div>
+</div>
+
+<!-- Project Bar (ordine + nuove voci bianche) -->
+<div id="projectBar" class="project-bar">
+  <a href="./titina.html">Titina (Tesi)</a>
+  <a href="./mondo-fuori.html">Mondo Fuori</a>
+  <a href="./luddovio.html">Luddovio</a>
+  <a href="./gettin-busy.html">Gettin’ Busy</a>
+
+  <a class="white-link" href="./numero-magazine.html">
+    Numero Magazine <span class="subtitle">proposta</span>
+  </a>
+  <a class="white-link" href="./italian-realism.html">
+    Italian Realism <span class="subtitle">editoriale</span>
+  </a>
+  <a class="white-link" href="./gentleman-oliviero-toscani.html">
+    Gentleman, Oliviero Toscani <span class="subtitle">editoriale</span>
+  </a>
+</div>
+
+<!-- Hero -->
+<div class="hero-wrapper">
+  <div class="hero-container">
+    <div class="name michele">
+      <span class="letter">M</span><span class="letter">I</span><span class="letter">C</span><span class="letter">H</span><span class="letter">E</span><span class="letter">L</span><span class="letter">E</span>
+    </div>
+    <img src="https://cdn.glitch.global/64df4688-4fab-4de1-afae-e07733a775ce/michele_motta-tesi-97.png?v=1750377578919" alt="Michele Motta" />
+    <div class="name motta">
+      <span class="letter">M</span><span class="letter">O</span><span class="letter">T</span><span class="letter">T</span><span class="letter">A</span>
+    </div>
+    <div class="tagline">
+      <div class="title" data-it="fashion designer & knitwear designer" data-en="fashion designer & knitwear designer">fashion designer & knitwear designer</div>
+      <div class="desc" data-it="appassionato di moda e cultura visiva, con uno sguardo curioso verso l’arte, il design e lo sport." data-en="Passionate about fashion and visual culture, with a curious eye on art, design and sports.">appassionato di moda e cultura visiva, con uno sguardo curioso verso l’arte, il design e lo sport.</div>
+    </div>
+  </div>
+</div>
+
+<!-- About Me Section -->
+<section id="about" class="about-me">
+  <img src="https://cdn.glitch.global/64df4688-4fab-4de1-afae-e07733a775ce/IMG_2624.jpeg?v=1750478456556" alt="ritratto">
+  <div class="about-text">
+    <h2 class="title slide-in-left" data-it="ABOUT ME" data-en="ABOUT ME">about me</h2>
+    <div class="animated-paragraph">
+      <span class="slide-in-right" style="--delay: 0.2s;"
+        data-it="Mi chiamo Michele Motta e sono un fashion designer siciliano con una forte passione per la maglieria e la cultura visiva. Mi sono trasferito a Milano per intraprendere il mio percorso di studi presso il Politecnico, dove ho conseguito la laurea triennale in Design della Moda, con una specializzazione in Knitwear Design."
+        data-en="My name is Michele Motta and I’m a Sicilian fashion designer with a strong passion for knitwear and visual culture. I moved to Milan to pursue my studies at the Politecnico, where I earned a Bachelor’s Degree in Fashion Design with a specialization in Knitwear.">
+        Mi chiamo Michele Motta e sono un fashion designer siciliano con una forte passione per la maglieria e la cultura visiva. Mi sono trasferito a Milano per intraprendere il mio percorso di studi presso il Politecnico, dove ho conseguito la laurea triennale in Design della Moda, con una specializzazione in Knitwear Design.
+      </span><br><br>
+
+      <span class="slide-in-right" style="--delay: 0.6s;"
+        data-it="Durante gli anni universitari, ho avuto l’opportunità di esplorare diversi linguaggi progettuali, sviluppando un metodo di lavoro rigoroso, ma sempre aperto alla sperimentazione. Amo lavorare con le mani e considero il processo di ricerca tanto importante quanto il risultato finale. Ogni mio progetto è profondamente legato alle mie passioni personali: l’arte, il cinema, la musica, lo sport e la cultura popolare sono elementi che entrano spontaneamente nel mio processo creativo. Credo che il design sia uno strumento per raccontarsi e creare connessioni emotive, e per questo i miei lavori hanno sempre una componente autobiografica e intima."
+        data-en="During my university years, I explored various design languages, developing a rigorous yet open-minded creative approach. I love working with my hands and consider research as important as the final result. Every project is deeply connected to my personal passions: art, cinema, music, sports and pop culture naturally influence my process. I believe design is a tool to express oneself and create emotional connections, which is why my work always carries an autobiographical and intimate dimension.">
+        Durante gli anni universitari, ho avuto l’opportunità di esplorare diversi linguaggi progettuali, sviluppando un metodo di lavoro rigoroso, ma sempre aperto alla sperimentazione. Amo lavorare con le mani e considero il processo di ricerca tanto importante quanto il risultato finale. Ogni mio progetto è profondamente legato alle mie passioni personali: l’arte, il cinema, la musica, lo sport e la cultura popolare sono elementi che entrano spontaneamente nel mio processo creativo. Credo che il design sia uno strumento per raccontarsi e creare connessioni emotive, e per questo i miei lavori hanno sempre una componente autobiografica e intima.
+      </span><br><br>
+
+      <span class="slide-in-right" style="--delay: 1s;"
+        data-it="Ho avuto esperienze sia in ambito retail, come visual merchandiser alla Rinascente di Milano, sia in contesti creativi accademici e professionali, che mi hanno permesso di crescere come designer e come persona. Oggi il mio obiettivo è entrare in contatto con realtà stimolanti, dove poter continuare a imparare, contribuire con la mia visione e portare avanti una ricerca coerente, etica e profondamente sentita."
+        data-en="I’ve worked in both retail – as a visual merchandiser at Rinascente Milano – and in creative academic and professional environments, experiences that helped me grow both as a designer and as a person. My goal today is to connect with inspiring realities, continue learning, and contribute with my vision through a consistent, ethical, and heartfelt research.">
+        Ho avuto esperienze sia in ambito retail, come visual merchandiser alla Rinascente di Milano, sia in contesti creativi accademici e professionali, che mi hanno permesso di crescere come designer e come persona. Oggi il mio obiettivo è entrare in contatto con realtà stimolanti, dove poter continuare a imparare, contribuire con la mia visione e portare avanti una ricerca coerente, etica e profondamente sentita.
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ====== CONTATTI: backdrop + pannello ====== -->
+<div id="contactsBackdrop" class="contacts-backdrop" onclick="closeContacts()" aria-hidden="true"></div>
+
+<aside id="contactsPanel" class="contacts-panel" aria-hidden="true" role="dialog" aria-labelledby="contactsTitle">
+  <div class="contacts-header">
+    <div id="contactsTitle" class="contacts-title" data-it="Contatti" data-en="Contacts">Contatti</div>
+    <button class="contacts-close" aria-label="Chiudi" onclick="closeContacts()">×</button>
+  </div>
+
+  <div class="contacts-list" id="contactsList">
+    <!-- Telefono -->
+    <div class="contact-item">
+      <a class="contact-label" href="tel:+393465288836">+39 346 528 8836</a>
+      <span class="icon-circle" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.03-.24c1.12.37 2.33.57 3.56.57a1 1 0 011 1V21a1 1 0 01-1 1C10.3 22 2 13.7 2 3a1 1 0 011-1h3.5a1 1 0 011 1c0 1.23.2 2.44.57 3.56a1 1 0 01-.24 1.03l-2.2 2.2z"/></svg>
+      </span>
+    </div>
+
+    <!-- Gmail -->
+    <div class="contact-item">
+      <a class="contact-label" href="mailto:michelemotta2001@gmail.com">michelemotta2001@gmail.com</a>
+      <span class="icon-circle" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      </span>
+    </div>
+
+    <!-- LinkedIn -->
+    <div class="contact-item">
+      <a class="contact-label" href="http://linkedin.com/in/michele-motta-a1885b266" target="_blank" rel="noopener">LinkedIn</a>
+      <span class="icon-circle" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M6.94 21H3.56V8.59h3.38V21zM5.25 7.06a1.96 1.96 0 110-3.92 1.96 1.96 0 010 3.92zM21 21h-3.37v-6.45c0-1.54-.03-3.51-2.14-3.51-2.14 0-2.47 1.67-2.47 3.4V21h-3.37V8.59h3.24v1.69h.05c.45-.86 1.56-1.77 3.22-1.77 3.45 0 4.09 2.27 4.09 5.22V21z"/></svg>
+      </span>
+    </div>
+
+    <!-- Instagram -->
+    <div class="contact-item">
+      <a class="contact-label" href="https://www.instagram.com/_michelemotta_?igsh=bmZsZHRjdGhnNWw0" target="_blank" rel="noopener">@_michelemotta_</a>
+      <span class="icon-circle" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 7a5 5 0 105 5 5 5 0 00-5-5zm0 8.2A3.2 3.2 0 118.8 12 3.2 3.2 0 0112 15.2z"/><path d="M17.8 2H6.2A4.2 4.2 0 002 6.2v11.6A4.2 4.2 0 006.2 22h11.6a4.2 4.2 0 004.2-4.2V6.2A4.2 4.2 0 0017.8 2zm2.4 15.8a2.4 2.4 0 01-2.4 2.4H6.2a2.4 2.4 0 01-2.4-2.4V6.2A2.4 2.4 0 016.2 3.8h11.6a2.4 2.4 0 012.4 2.4z"/><circle cx="17.5" cy="6.5" r="1.2"/></svg>
+      </span>
+    </div>
+  </div>
+</aside>
+
+<!-- ================== Script ================== -->
+<script>
+  const nav = document.getElementById("mainNav");
+  const projectBar = document.getElementById("projectBar");
+  const projectLinks = projectBar.querySelectorAll("a");
+  let navShown = false;
+  let barOpen = false;
+
+  function toggleProjectBar() {
+    if (barOpen) {
+      projectBar.classList.remove("show");
+      projectLinks.forEach(link => {
+        link.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+        link.style.opacity = 0;
+        link.style.transform = "translateY(-20px)";
+      });
+      setTimeout(() => { projectBar.style.display = "none"; }, 400);
+    } else {
+      projectBar.style.display = "flex";
+      setTimeout(() => {
+        projectLinks.forEach((link, i) => {
+          link.style.transition = `opacity 0.4s ease ${i * 0.1}s, transform 0.4s ease ${i * 0.1}s`;
+          link.style.opacity = 1;
+          link.style.transform = "translateY(0)";
+        });
+        projectBar.classList.add("show");
+      }, 10);
+    }
+    barOpen = !barOpen;
+  }
+
+  function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  }
+
+  // Mostra menu al primo scroll
+  window.addEventListener("scroll", () => {
+    if (!navShown && window.scrollY > 30) {
+      nav.classList.add("visible");
+      navShown = true;
+    }
+  });
+
+  // Chiudi il menù solo se clic fuori sia da top-menu che da projectBar
+  window.addEventListener("click", function(e) {
+    if (!e.target.closest('.top-menu') && !e.target.closest('#projectBar')) {
+      projectBar.classList.remove("show");
+      barOpen = false;
+      projectLinks.forEach(link => {
+        link.style.opacity = 0;
+        link.style.transform = "translateY(-20px)";
+      });
+      setTimeout(() => { projectBar.style.display = "none"; }, 400);
+    }
+  });
+
+  // NON bloccare il click sui link del menù
+  projectBar.addEventListener('click', function(e){
+    const a = e.target.closest('a');
+    if (a) e.stopPropagation();
+  });
+
+  // Switch lingua
+  document.getElementById("langToggle").addEventListener("change", function () {
+    const lang = this.checked ? "en" : "it";
+    document.querySelectorAll("[data-it]").forEach(el => { el.innerHTML = el.dataset[lang]; });
+    // Aggiorna anche il titolo del pannello contatti
+    const ct = document.getElementById('contactsTitle');
+    if (ct && ct.dataset[lang]) ct.textContent = ct.dataset[lang];
+  });
+
+  /* ================== CONTATTI: logica apertura/chiusura + stagger ================== */
+  const contactsBackdrop = document.getElementById('contactsBackdrop');
+  const contactsPanel    = document.getElementById('contactsPanel');
+  const contactsList     = document.getElementById('contactsList');
+
+  function openContacts(){
+    // mostra overlay + pannello
+    contactsBackdrop.classList.add('show');
+    contactsPanel.classList.add('show');
+    contactsPanel.setAttribute('aria-hidden', 'false');
+    // blocca scroll del body
+    document.body.style.overflow = 'hidden';
+
+    // reset stato items
+    const items = [...contactsList.querySelectorAll('.contact-item')];
+    items.forEach(i => i.classList.remove('in'));
+
+    // stagger: uno alla volta
+    items.forEach((item, idx) => {
+      setTimeout(() => item.classList.add('in'), 120 * idx);
+    });
+  }
+
+  function closeContacts(){
+    contactsBackdrop.classList.remove('show');
+    contactsPanel.classList.remove('show');
+    contactsPanel.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    // rimuovi la classe 'in' così al prossimo open rifà lo stagger
+    const items = contactsList.querySelectorAll('.contact-item');
+    items.forEach(i => i.classList.remove('in'));
+  }
+
+  // Chiudi con ESC
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeContacts();
+  });
+
+  // esponi funzioni globali
+  window.openContacts = openContacts;
+  window.closeContacts = closeContacts;
+</script>
+
+</body>
+</html>
