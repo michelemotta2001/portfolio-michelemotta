@@ -1,0 +1,96 @@
+---
+/**
+ * About: ritratto in bianco e nero, titolo in grassetto minuscolo e i tre paragrafi
+ * originali di Michele (site.about). Su telefono il ritratto va sopra, in formato contenuto.
+ */
+import { Image } from 'astro:assets';
+import T from '../T.astro';
+import { site } from '../../lib/data';
+import { img } from '../../lib/images';
+---
+<section id="about" class="about" aria-labelledby="about-title">
+  <div class="wrap about__grid">
+    <figure class="about__portrait">
+      <Image
+        class="about__img"
+        src={img(site.portrait)}
+        alt="Michele Motta in felpa con cappuccio e pantaloni ampi, in piedi in uno stadio vuoto, in bianco e nero"
+        widths={[320, 480, 640, 800, 1000, 1280]}
+        sizes="(min-width: 1304px) 500px, (min-width: 1024px) 38vw, (min-width: 760px) 40vw, 64vw"
+        width={1280}
+        format="webp"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+
+    <div class="about__text">
+      <p class="label">About me</p>
+      <T t={site.aboutTitle} as="h2" id="about-title" class="about__title bold-lower reveal" />
+      <div class="about__prose prose">
+        {site.about.map((para, i) => (
+          <T t={para} as="p" class="reveal" style={`--reveal-delay: ${80 + i * 80}ms`} />
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    padding-block: var(--section);
+    border-top: 1px solid var(--line);
+  }
+
+  .about__grid {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  /* telefono: ritratto sopra, contenuto, ritagliato in 4:5 */
+  .about__portrait { width: min(64%, 300px); }
+  .about__img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 60%; /* la figura è a metà campo: il ritaglio la tiene al centro */
+    filter: grayscale(1) contrast(1.04);
+    background: var(--ink-2);
+  }
+
+  .about__title {
+    margin-top: var(--space-sm);
+    font-size: var(--step-3);
+    line-height: 1.04;
+    color: var(--paper);
+    text-wrap: balance;
+  }
+  .about__prose {
+    margin-top: var(--space-xl);
+    color: var(--text-2);
+  }
+
+  /* iPad verticale e oltre: due colonne, il ritratto resta fermo mentre il testo scorre */
+  @media (min-width: 760px) {
+    .about__grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      column-gap: var(--space-xl);
+      align-items: start;
+    }
+    .about__portrait {
+      width: 100%;
+      position: sticky;
+      top: calc(var(--header-h) + var(--space-lg));
+    }
+    .about__img { aspect-ratio: 2 / 3; }
+  }
+
+  @media (min-width: 1024px) {
+    .about__grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      column-gap: clamp(var(--space-2xl), 8vw, var(--space-4xl));
+    }
+    .about__text { padding-top: var(--space-2xl); }
+  }
+</style>

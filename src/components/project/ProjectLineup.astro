@@ -1,0 +1,365 @@
+---
+/**
+ * Line up — richiesta del cliente: "prima la foto come era fatta prima, a riga,
+ * e poi scendendo facciamo l'effetto".
+ *  (a) le tavole originali a tutta larghezza, cliccabili (lightbox, gruppo "lineup");
+ *  (b) una pista alta con un palco sticky: un solo modello al centro, scorrendo cambia solo
+ *      il modello (crossfade), a sinistra il numero del look, a destra lato + contatore + tacche.
+ * Senza JS o con movimento ridotto la pista non c'è: i modelli stanno in una fila orizzontale.
+ * Logica in src/scripts/project.ts.
+ */
+import { Image } from 'astro:assets';
+import T from '../T.astro';
+import Plate from './Plate.astro';
+import { img } from '../../lib/images';
+import { ui, bi } from '../../lib/i18n';
+import { pad2, type Model, type Project } from '../../lib/data';
+
+interface Props {
+  p: Project;
+}
+
+const { p } = Astro.props;
+const plates = p.lineup?.plates ?? [];
+const models = p.lineup?.models ?? [];
+const n = models.length;
+const first = models[0];
+
+// I PNG dei modelli hanno tutti la stessa misura: il palco usa il rapporto del primo
+const m0 = first ? img(first.src) : undefined;
+const ar = m0 ? m0.width / m0.height : 0.32;
+const looks = new Set(models.map((m) => m.look)).size;
+
+const plateSizes =
+  plates.length > 1
+    ? '(min-width: 1320px) 608px, (min-width: 700px) 47vw, calc(100vw - 32px)'
+    : '(min-width: 1320px) 1240px, calc(100vw - 32px)';
+
+const modelAlt = (m: Model) =>
+  m.side.it.toLowerCase() === 'figurino'
+    ? `Figurino del look ${pad2(m.look)} della collezione ${p.title}`
+    : `Look ${pad2(m.look)} della collezione ${p.title}, vista ${m.side.it.toLowerCase()}`;
+---
+<section class="pj-lineup" aria-labelledby="pj-lineup-title">
+  <div class="wrap">
+    <div class="pj-lineup__head">
+      <h2 id="pj-lineup-title" class="pj-lineup__title display"><T t={ui.lineup} /></h2>
+      {looks > 0 && <T t={bi(`${pad2(looks)} look`, `${pad2(looks)} looks`)} as="p" class="label" />}
+    </div>
+
+    {plates.length > 0 && (
+      <div class="pj-lineup__plates" data-count={plates.length}>
+        {plates.map((path, i) => (
+          <Plate
+            class="reveal"
+            path={path}
+            group="lineup"
+            alt={plates.length > 1
+              ? `Line up della collezione ${p.title}, tavola ${i + 1} di ${plates.length}`
+              : `Line up della collezione ${p.title}`}
+            lbCaption={bi(
+              `Line up — Tavola ${pad2(i + 1)} / ${pad2(plates.length)}`,
+              `Line up — Plate ${pad2(i + 1)} / ${pad2(plates.length)}`,
+            )}
+            sizes={plateSizes}
+            widths={[600, 900, 1240, 1600, 2000, 2480]}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+
+  {first && (
+    <div class="pj-seq" data-lineup style={`--n: ${n}; --lu-ar: ${ar.toFixed(4)}`}>
+      <div class="pj-seq__track" data-lu-track>
+        <div class="pj-seq__stage" data-lu-stage>
+          <div class="pj-seq__look" aria-hidden="true">
+            <T t={ui.look} class="pj-seq__look-label label" />
+            <span class="pj-seq__num display" data-lu-num>{pad2(first.look)}</span>
+          </div>
+
+          <ol class="pj-seq__list" aria-labelledby="pj-lineup-title">
+            {models.map((m, i) => (
+              <li
+                class:list={['pj-seq__item', { 'is-active': i === 0 }]}
+                data-lu-item
+                data-look={pad2(m.look)}
+                data-side-it={m.side.it}
+                data-side-en={m.side.en}
+              >
+                <figure class="pj-seq__fig">
+                  {/* eager: sono piccoli e devono essere già pronti quando la sequenza li mostra */}
+                  <Image src={img(m.src)} alt={modelAlt(m)} format="webp" loading="eager" decoding="async" />
+                  <figcaption class="pj-seq__cap">
+                    <span>Look {pad2(m.look)}</span>
+                    <span aria-hidden="true">·</span>
+                    <T t={m.side} />
+                  </figcaption>
+                </figure>
+              </li>
+            ))}
+          </ol>
+
+          <div class="pj-seq__info" aria-hidden="true">
+            <p class="pj-seq__side bold-lower" data-lu-side>{first.side.it}</p>
+            <p class="pj-seq__count"><span data-lu-index>01</span> / {pad2(n)}</p>
+            <div class="pj-seq__ticks">
+              {models.map((_, i) => <span class:list={['pj-seq__tick', { 'is-done': i === 0 }]} data-lu-tick></span>)}
+            </div>
+            <p class="pj-seq__hint label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 4v16M6 14l6 6 6-6"></path>
+              </svg>
+              <T t={ui.scrollHint} />
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+</section>
+
+<style>
+  .pj-lineup {
+    padding-block: var(--section);
+    border-top: 1px solid var(--line);
+  }
+
+  .pj-lineup__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+  }
+  .pj-lineup__title {
+    font-size: var(--step-4);
+    color: var(--paper);
+  }
+
+  /* (a) tavole originali, a riga */
+  .pj-lineup__plates {
+    display: grid;
+    gap: var(--space-md);
+    align-items: start;
+  }
+  @media (min-width: 700px) {
+    .pj-lineup__plates[data-count='2'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  /* (b) sequenza. Base = fila orizzontale scorrevole (senza JS / movimento ridotto) */
+  .pj-seq {
+    --lu-step: 52svh;
+    --lu-h: min(68svh, 600px);
+    --lu-pad: clamp(12px, 2.4svh, 24px);
+    --lu-edge: max(var(--gutter), calc((100% - var(--wrap)) / 2));
+    margin-top: var(--section);
+  }
+
+  .pj-seq__look,
+  .pj-seq__info { display: none; }
+
+  .pj-seq__list {
+    display: flex;
+    gap: var(--space-sm);
+    margin: 0;
+    padding: 0 var(--lu-edge) var(--space-sm);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--lu-edge);
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
+  }
+  .pj-seq__item {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+  .pj-seq__fig {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+  .pj-seq__fig > :global(img) {
+    box-sizing: content-box;
+    height: clamp(240px, 52svh, 480px);
+    width: auto;
+    aspect-ratio: var(--lu-ar);
+    padding: var(--lu-pad);
+    background: var(--plate);
+    object-fit: contain;
+  }
+  .pj-seq__cap {
+    display: flex;
+    gap: 6px;
+    font-size: var(--step--2);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  /* tacca: la parte "fatta" è un livello d'accento che compare in opacità */
+  .pj-seq__tick {
+    position: relative;
+    flex: 1;
+    height: 2px;
+    background: var(--line-strong);
+  }
+  .pj-seq__tick::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.25s var(--ease-out-quart);
+  }
+  .pj-seq__tick.is-done::after { opacity: 1; }
+
+  /* Pista a scorrimento: solo con JS e movimento consentito */
+  @media (prefers-reduced-motion: no-preference) {
+    /* "studio": fondo chiaro a tutta larghezza, i modelli scontornati ci stanno sopra senza riquadro */
+    :global(.js) .pj-seq__track {
+      height: calc(100svh + var(--n) * var(--lu-step));
+      background: var(--plate);
+      color: var(--ink);
+    }
+    :global(.js) .pj-seq__look-label,
+    :global(.js) .pj-seq__hint { color: oklch(0.42 0.01 75); }
+
+    :global(.js) .pj-seq__stage {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      width: min(var(--wrap), 100% - 2 * var(--gutter));
+      margin-inline: auto;
+      padding: calc(var(--header-h) + 16px) 0 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      column-gap: clamp(24px, 5vw, 80px);
+    }
+
+    :global(.js) .pj-seq__look {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2xs);
+      justify-self: start;
+    }
+    :global(.js) .pj-seq__num {
+      font-size: clamp(5.5rem, 2.5rem + 9vw, 12.5rem);
+      line-height: 0.82;
+      color: var(--ink);
+    }
+
+    /* il palco: stessa posizione e misura per tutti i modelli */
+    :global(.js) .pj-seq__list {
+      position: relative;
+      display: block;
+      box-sizing: content-box;
+      height: var(--lu-h);
+      width: auto;
+      aspect-ratio: var(--lu-ar);
+      padding: var(--lu-pad);
+      overflow: visible;
+      scroll-snap-type: none;
+      background: none;
+      justify-self: center;
+    }
+    :global(.js) .pj-seq__item {
+      position: absolute;
+      inset: var(--lu-pad);
+      opacity: 0;
+      transition: opacity 0.18s var(--ease-out-quart);
+    }
+    :global(.js) .pj-seq__item.is-active { opacity: 1; }
+    :global(.js) .pj-seq__fig { display: block; height: 100%; }
+    :global(.js) .pj-seq__fig > :global(img) {
+      box-sizing: border-box;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      background: none;
+    }
+    :global(.js) .pj-seq__cap {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    :global(.js) .pj-seq__info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--space-sm);
+      justify-self: end;
+      width: min(100%, 17rem);
+      text-align: right;
+    }
+    :global(.js) .pj-seq__side {
+      font-size: var(--step-3);
+      line-height: 1;
+      color: var(--ink);
+    }
+    :global(.js) .pj-seq__count {
+      font-size: var(--step-1);
+      color: oklch(0.36 0.01 75);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
+    }
+    :global(.js) .pj-seq__ticks {
+      display: flex;
+      gap: 4px;
+      width: 100%;
+    }
+    :global(.js) .pj-seq__hint {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+
+  /* Telefono: numero del look piccolo sopra, informazioni sotto */
+  @media (prefers-reduced-motion: no-preference) and (max-width: 699px) {
+    .pj-seq {
+      --lu-h: min(62svh, calc(100svh - var(--header-h) - 220px));
+      --lu-pad: 12px;
+    }
+    :global(.js) .pj-seq__stage {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto auto auto;
+      align-content: center;
+      justify-items: center;
+      row-gap: var(--space-xs);
+      padding: calc(var(--header-h) + 8px) 0 16px;
+    }
+    :global(.js) .pj-seq__look {
+      flex-direction: row;
+      align-items: baseline;
+      gap: 10px;
+      justify-self: center;
+    }
+    :global(.js) .pj-seq__num {
+      font-size: 2.25rem;
+      line-height: 1;
+    }
+    :global(.js) .pj-seq__info {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: baseline;
+      gap: 10px 16px;
+      justify-self: center;
+      width: min(100%, 22rem);
+      text-align: left;
+    }
+    :global(.js) .pj-seq__side { font-size: var(--step-1); }
+    :global(.js) .pj-seq__count { font-size: var(--step--1); }
+    :global(.js) .pj-seq__ticks,
+    :global(.js) .pj-seq__hint { grid-column: 1 / -1; }
+    :global(.js) .pj-seq__hint { justify-content: center; }
+  }
+</style>

@@ -1,0 +1,93 @@
+---
+/**
+ * Homepage: MOTTA, filtri per categoria, mensola 3D dei lavori, about e percorso.
+ * Il footer con i contatti lo aggiunge Base.
+ * Comportamenti (lettere, filtri, didascalie, entrate) in src/scripts/home.ts.
+ */
+import Base from '../layouts/Base.astro';
+import T from '../components/T.astro';
+import Hero from '../components/home/Hero.astro';
+import Filters from '../components/home/Filters.astro';
+import Shelf from '../components/home/Shelf.astro';
+import About from '../components/home/About.astro';
+import Path from '../components/home/Path.astro';
+import { projects, site, pad2 } from '../lib/data';
+import { img } from '../lib/images';
+import { ui } from '../lib/i18n';
+
+/**
+ * Copertine: testo alternativo (projects.json non lo contiene) e punto focale del ritaglio.
+ * Le foto orizzontali finiscono in riquadri verticali: il focus tiene il soggetto in vista.
+ */
+const covers: Record<string, { alt: string; focus?: string }> = {
+  titina: {
+    alt: 'Titina: un modello in felpa oversize e bermuda in maglia, braccia aperte al centro di un campo da football, in bianco e nero',
+  },
+  'mondo-fuori': {
+    alt: 'Mondo Fuori: dettaglio di un look in maglia color cioccolato, top a trama aperta e pantaloni lavorati, seduto su un muro di cemento',
+  },
+  luddovio: {
+    alt: 'Luddovio: copertina arancione con il logo disegnato a mano e un jeans con una conchiglia in neoprene arancione',
+    focus: '50% 35%',
+  },
+  'gettin-busy': {
+    alt: 'Gettin’ Busy: un look in denim davanti a un murale con un cuore rosa, accanto al mosaico «I love you» e all’Arco di Trionfo impacchettato',
+    focus: '14% 50%',
+  },
+  'numero-magazine': {
+    alt: 'Numero Magazine: copertina di Numéro 001 «Nuova Era» con due ragazzi di profilo, lei con occhiali scuri e abito bianco, lui con cappello rosa',
+    focus: '50% 0%',
+  },
+  'italian-realism': {
+    alt: 'Italian Realism: una donna con abito a fiori seduta davanti a un camino, in bianco e nero',
+    focus: '68% 40%',
+  },
+  'gentleman-oliviero-toscani': {
+    alt: 'Gentleman: due modelli in poncho e cappello da cowboy con una sella, su fondo chiaro, fotografati da Oliviero Toscani',
+    focus: '50% 40%',
+  },
+};
+
+const works = [...projects]
+  .sort((a, b) => a.order - b.order)
+  .map((p, i) => {
+    const cover = img(p.cover);
+    return {
+      p,
+      num: pad2(i + 1),
+      alt: covers[p.slug]?.alt ?? p.title,
+      focus: covers[p.slug]?.focus ?? '50% 50%',
+      ar: cover.width / cover.height,
+    };
+  });
+
+const description =
+  'Michele Motta, fashion & knitwear designer formato al Politecnico di Milano: collezioni di maglieria, tesi, styling ed editoriali.';
+---
+<Base
+  title="Michele Motta — Fashion & Knitwear Designer"
+  description={description}
+  home={true}
+  image={img(site.heroImage)}
+>
+  <Hero count={works.length} />
+
+  <section id="lavori" class="works" aria-labelledby="lavori-title">
+    <h2 id="lavori-title" class="sr-only"><T t={ui.works} /></h2>
+    <Filters works={works} />
+    <Shelf works={works} />
+  </section>
+
+  <!-- Richiesta del cliente: sotto la mensola viene subito l'About (niente evidenza né indice) -->
+
+  <About />
+  <Path />
+
+  <script>
+    import '../scripts/home.ts';
+  </script>
+</Base>
+
+<style>
+  .works { padding-bottom: var(--section); }
+</style>

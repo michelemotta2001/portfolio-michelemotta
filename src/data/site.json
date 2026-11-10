@@ -1,0 +1,79 @@
+{
+ "name": "Michele Motta",
+ "role": {
+  "it": "fashion & knitwear designer",
+  "en": "fashion & knitwear designer"
+ },
+ "tagline": {
+  "it": "appassionato di moda e cultura visiva, con uno sguardo curioso verso l’arte, il design e lo sport.",
+  "en": "Passionate about fashion and visual culture, with a curious eye on art, design and sports."
+ },
+ "aboutTitle": {
+  "it": "Fashion designer siciliano, con la maglieria nelle mani e la cultura visiva negli occhi.",
+  "en": "A Sicilian fashion designer, with knitwear in his hands and visual culture in his eyes."
+ },
+ "about": [
+  {
+   "it": "Mi chiamo Michele Motta e sono un fashion designer siciliano con una forte passione per la maglieria e la cultura visiva. Mi sono trasferito a Milano per intraprendere il mio percorso di studi presso il Politecnico, dove ho conseguito la laurea triennale in Design della Moda, con una specializzazione in Knitwear Design.",
+   "en": "My name is Michele Motta and I’m a Sicilian fashion designer with a strong passion for knitwear and visual culture. I moved to Milan to pursue my studies at the Politecnico, where I earned a Bachelor’s Degree in Fashion Design with a specialization in Knitwear."
+  },
+  {
+   "it": "Durante gli anni universitari, ho avuto l’opportunità di esplorare diversi linguaggi progettuali, sviluppando un metodo di lavoro rigoroso, ma sempre aperto alla sperimentazione. Amo lavorare con le mani e considero il processo di ricerca tanto importante quanto il risultato finale. Ogni mio progetto è profondamente legato alle mie passioni personali: l’arte, il cinema, la musica, lo sport e la cultura popolare sono elementi che entrano spontaneamente nel mio processo creativo. Credo che il design sia uno strumento per raccontarsi e creare connessioni emotive, e per questo i miei lavori hanno sempre una componente autobiografica e intima.",
+   "en": "During my university years, I explored various design languages, developing a rigorous yet open-minded creative approach. I love working with my hands and consider research as important as the final result. Every project is deeply connected to my personal passions: art, cinema, music, sports and pop culture naturally influence my process. I believe design is a tool to express oneself and create emotional connections, which is why my work always carries an autobiographical and intimate dimension."
+  },
+  {
+   "it": "Ho avuto esperienze sia in ambito retail, come visual merchandiser alla Rinascente di Milano, sia in contesti creativi accademici e professionali, che mi hanno permesso di crescere come designer e come persona. Oggi il mio obiettivo è entrare in contatto con realtà stimolanti, dove poter continuare a imparare, contribuire con la mia visione e portare avanti una ricerca coerente, etica e profondamente sentita.",
+   "en": "I’ve worked in both retail – as a visual merchandiser at Rinascente Milano – and in creative academic and professional environments, experiences that helped me grow both as a designer and as a person. My goal today is to connect with inspiring realities, continue learning, and contribute with my vision through a consistent, ethical, and heartfelt research."
+  }
+ ],
+ "portrait": "home/home-02.jpg",
+ "heroImage": "home/home-01.png",
+ "tags": [
+  "Collezioni",
+  "Knitwear",
+  "Editoriali",
+  "Styling",
+  "Fashion photography",
+  "Tesi"
+ ],
+ "tagsEn": {
+  "Collezioni": "Collections",
+  "Knitwear": "Knitwear",
+  "Editoriali": "Editorials",
+  "Styling": "Styling",
+  "Fashion photography": "Fashion photography",
+  "Tesi": "Thesis"
+ },
+ "path": [
+  {
+   "title": "Politecnico di Milano",
+   "text": {
+    "it": "Laurea triennale in Design della Moda — specializzazione Knitwear Design. Tesi “Titina”, A.A. 2023/2024.",
+    "en": "Bachelor’s degree in Fashion Design — Knitwear Design specialisation. Thesis “Titina”, academic year 2023/2024."
+   }
+  },
+  {
+   "title": "Rinascente Milano",
+   "text": {
+    "it": "Visual merchandiser in ambito retail.",
+    "en": "Visual merchandiser in retail."
+   }
+  },
+  {
+   "title": "Styling editoriale",
+   "titleEn": "Editorial styling",
+   "text": {
+    "it": "Stylist con Tommaso Basilio per The Mode / Snob Non per Tutti e Gentleman, con la direzione di Oliviero Toscani.",
+    "en": "Stylist alongside Tommaso Basilio for The Mode / Snob Non per Tutti and Gentleman, directed by Oliviero Toscani."
+   }
+  }
+ ],
+ "contacts": {
+  "email": "michelemotta2001@gmail.com",
+  "phone": "+39 346 528 8836",
+  "phoneHref": "tel:+393465288836",
+  "linkedin": "https://www.linkedin.com/in/michele-motta-a1885b266",
+  "instagram": "https://www.instagram.com/_michelemotta_",
+  "instagramHandle": "@_michelemotta_"
+ }
+}

@@ -1,0 +1,64 @@
+---
+import T from './T.astro';
+import { ui } from '../lib/i18n';
+import { site } from '../lib/data';
+const c = site.contacts;
+---
+<footer id="contatti" class="site-footer">
+  <div class="wrap site-footer__in">
+    <T t={ui.contactsTitle} class="label label--accent" />
+    <a class="site-footer__mail" href={`mailto:${c.email}`}>{c.email}</a>
+    <ul class="site-footer__links">
+      <li><a href={c.phoneHref}>{c.phone}</a></li>
+      <li><a href={c.linkedin} target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">↗</span></a></li>
+      <li><a href={c.instagram} target="_blank" rel="noopener">Instagram {c.instagramHandle} <span aria-hidden="true">↗</span></a></li>
+    </ul>
+    <div class="site-footer__base">
+      <span>© {new Date().getFullYear()} Michele Motta</span>
+      <span>Fashion &amp; Knitwear Designer — Milano</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer { border-top: 1px solid var(--line); }
+  .site-footer__in {
+    padding-block: var(--section) var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+  .site-footer__mail {
+    font-weight: 700;
+    font-size: clamp(1.75rem, 0.8rem + 4.6vw, 4.75rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    color: var(--paper);
+  }
+  .site-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs) var(--space-xl);
+    font-size: var(--step-1);
+  }
+  .site-footer__links a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    text-decoration: none;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .site-footer__links a:hover { border-bottom-color: var(--accent); }
+  .site-footer__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-xs);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--line);
+    font-size: var(--step--2);
+    color: var(--muted);
+  }
+</style>

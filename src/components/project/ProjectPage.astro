@@ -1,0 +1,42 @@
+---
+/**
+ * Template delle pagine progetto (titina, mondo-fuori, luddovio, gettin-busy).
+ * Ordine: apertura → intro (testo fermo, foto che scorrono) → line up (tavole a riga +
+ * sequenza a scorrimento) → archivio a tab → navigazione al lavoro successivo.
+ */
+import ProjectHero from './ProjectHero.astro';
+import ProjectIntro from './ProjectIntro.astro';
+import ProjectLineup from './ProjectLineup.astro';
+import ProjectArchive from './ProjectArchive.astro';
+import NextNav from '../NextNav.astro';
+import Lightbox from '../Lightbox.astro';
+import type { Project } from '../../lib/data';
+
+interface Props {
+  p: Project;
+}
+
+const { p } = Astro.props;
+const hasLineup = !!p.lineup && (p.lineup.plates.length > 0 || p.lineup.models.length > 0);
+const hasArchive = !!p.tabs && p.tabs.length > 0;
+---
+<article class="pj">
+  <ProjectHero p={p} />
+  <ProjectIntro p={p} />
+  {hasLineup && <ProjectLineup p={p} />}
+  {hasArchive && <ProjectArchive p={p} />}
+</article>
+<NextNav p={p} />
+<Lightbox />
+
+<script>
+  import '../../scripts/project.ts';
+</script>
+
+<style>
+  .pj {
+    /* accento per testi piccoli: schiarito verso l'avorio per restare ≥ 4.5:1 su --ink
+       (serve a Mondo Fuori, il cui marrone puro sta sotto soglia) */
+    --pj-accent-ink: color-mix(in oklch, var(--accent) 78%, var(--paper));
+  }
+</style>

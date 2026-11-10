@@ -1,0 +1,1435 @@
+[
+ {
+  "slug": "titina",
+  "order": 1,
+  "type": "project",
+  "title": "Titina",
+  "accent": "#B29D4D",
+  "year": "2023/24",
+  "kind": {
+   "it": "Tesi di laurea",
+   "en": "Bachelor thesis"
+  },
+  "tags": [
+   "Collezioni",
+   "Knitwear",
+   "Tesi"
+  ],
+  "role": {
+   "it": "Designer",
+   "en": "Designer"
+  },
+  "excerpt": {
+   "it": "Una ricerca sull’influenza reciproca di moda e sport dagli anni ’90: lo sportswear esce dal campo e diventa linguaggio quotidiano, spinto da icone come Michael Jordan, Tupac Shakur e le Spice Girls.",
+   "en": "A study of how fashion and sport have shaped each other since the ’90s: sportswear leaves the pitch and becomes an everyday language, driven by icons like Michael Jordan, Tupac Shakur and the Spice Girls."
+  },
+  "context": {
+   "it": "Tesi di Laurea – Fashion & Knitwear Design<br>Politecnico di Milano – A.A. 2023/2024<br>Relatore: Giovanni Maria Conti",
+   "en": "Bachelor Thesis – Fashion & Knitwear Design<br>Politecnico di Milano – A.Y. 2023/2024<br>Supervisor: Giovanni Maria Conti"
+  },
+  "paragraphs": [
+   {
+    "it": "Il progetto di tesi si concentra sull’influenza che moda e sport hanno avuto a partire dagli anni ’90, considerandoli come incubatori di nuove tendenze e trasformazioni stilistiche. In questo decennio, lo sport ha assunto un ruolo di rilievo nella cultura popolare, andando ben oltre l’ambito atletico per imporsi come fenomeno sociale e culturale.",
+    "en": "The thesis project focuses on the influence that fashion and sport have had since the 1990s, considering them as incubators of new trends and stylistic transformations. In this decade, sport assumed a prominent role in popular culture, going far beyond the athletic field to establish itself as a social and cultural phenomenon."
+   },
+   {
+    "it": "L’abbigliamento sportivo, originariamente pensato per l’attività fisica, ha iniziato a fondersi con la moda di tutti i giorni, creando un’estetica caratterizzata da comfort, praticità e un nuovo senso di appartenenza. Le icone di quel tempo hanno adottato questo mix tra sport e moda, influenzando profondamente il modo in cui le persone si vestivano e percepivano il proprio stile.",
+    "en": "Sportswear, originally designed for physical activity, began to merge with everyday fashion, creating an aesthetic defined by comfort, practicality, and a new sense of belonging. The icons of that time embraced this mix of sport and fashion, deeply influencing how people dressed and perceived their own style."
+   },
+   {
+    "it": "Un ruolo fondamentale è stato giocato dalle icone culturali degli anni ’90, come Michael Jordan, Tupac Shakur e le Spice Girls, che hanno contribuito a normalizzare e popolarizzare lo stile sporty-chic su scala globale. Queste figure, diventate veri e propri simboli di riferimento per l’epoca, hanno reso la moda ispirata allo sport accessibile e desiderabile anche al di fuori dell’ambito sportivo, con un impatto duraturo sul modo di esprimere la propria identità attraverso l’abbigliamento.",
+    "en": "A fundamental role was played by the cultural icons of the 1990s, such as Michael Jordan, Tupac Shakur, and the Spice Girls, who helped normalize and popularize the sporty-chic style on a global scale. These figures, who became true symbols of the era, made sport-inspired fashion accessible and desirable even outside the sporting sphere, with a lasting impact on how people expressed their identity through clothing."
+   },
+   {
+    "it": "Inoltre, si assiste in questo periodo all’emergere dello streetwear come ponte tra moda e sport. Lo streetwear diventa un movimento stilistico in cui elementi sportivi si mescolano con la moda di lusso e la cultura urbana, dando vita a un linguaggio visivo completamente nuovo. Brand come Nike, Adidas e Reebok iniziano a collaborare con designer per creare capi che siano al tempo stesso funzionali e stilisticamente all’avanguardia.",
+    "en": "In addition, this period saw the emergence of streetwear as a bridge between fashion and sport. Streetwear became a stylistic movement in which sports elements mixed with luxury fashion and urban culture, giving life to a completely new visual language. Brands such as Nike, Adidas, and Reebok began collaborating with designers to create garments that were both functional and stylistically cutting-edge."
+   },
+   {
+    "it": "L’interazione tra sportswear e moda quotidiana contribuisce così alla nascita di uno stile inclusivo e trasversale, che raggiunge un’ampia fascia di popolazione e definisce una nuova estetica. La tesi indaga quindi come questa sinergia tra sport e moda abbia dato vita a un’identità estetica unica, i cui effetti sono visibili ancora oggi, con molte tendenze contemporanee che richiamano quell’epoca.",
+    "en": "The interaction between sportswear and everyday fashion thus contributed to the creation of an inclusive and transversal style, which reached a broad segment of the population and defined a new aesthetic. The thesis therefore investigates how this synergy between sport and fashion gave rise to a unique aesthetic identity, whose effects are still visible today, with many contemporary trends recalling that era."
+   }
+  ],
+  "intro": [
+   "titina/intro-01.jpg",
+   "titina/intro-02.jpg",
+   "titina/intro-03.jpg",
+   "titina/intro-04.jpg"
+  ],
+  "lineup": {
+   "plates": [
+    "titina/lineup-01.jpg",
+    "titina/lineup-02.jpg"
+   ],
+   "models": [
+    {
+     "src": "titina/modelli/look-01-fronte.png",
+     "look": 1,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "titina/modelli/look-01-retro.png",
+     "look": 1,
+     "side": {
+      "it": "Retro",
+      "en": "Back"
+     }
+    },
+    {
+     "src": "titina/modelli/look-02-fronte.png",
+     "look": 2,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "titina/modelli/look-02-retro.png",
+     "look": 2,
+     "side": {
+      "it": "Retro",
+      "en": "Back"
+     }
+    },
+    {
+     "src": "titina/modelli/look-03-fronte.png",
+     "look": 3,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "titina/modelli/look-03-retro.png",
+     "look": 3,
+     "side": {
+      "it": "Retro",
+      "en": "Back"
+     }
+    },
+    {
+     "src": "titina/modelli/look-04-fronte.png",
+     "look": 4,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "titina/modelli/look-04-retro.png",
+     "look": 4,
+     "side": {
+      "it": "Retro",
+      "en": "Back"
+     }
+    },
+    {
+     "src": "titina/modelli/look-05-fronte.png",
+     "look": 5,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "titina/modelli/look-05-retro.png",
+     "look": 5,
+     "side": {
+      "it": "Retro",
+      "en": "Back"
+     }
+    },
+    {
+     "src": "titina/modelli/look-06-fronte.png",
+     "look": 6,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "titina/modelli/look-06-retro.png",
+     "look": 6,
+     "side": {
+      "it": "Retro",
+      "en": "Back"
+     }
+    }
+   ]
+  },
+  "tabs": [
+   {
+    "id": "moodboard",
+    "label": {
+     "it": "Moodboard",
+     "en": "Moodboard"
+    },
+    "images": [
+     "titina/moodboard-01.jpg"
+    ]
+   },
+   {
+    "id": "outfit",
+    "label": {
+     "it": "Outfit",
+     "en": "Outfit"
+    },
+    "images": [
+     "titina/outfit-01.jpg",
+     "titina/outfit-02.jpg",
+     "titina/outfit-03.jpg",
+     "titina/outfit-04.jpg",
+     "titina/outfit-05.jpg",
+     "titina/outfit-06.jpg"
+    ]
+   },
+   {
+    "id": "silhouette",
+    "label": {
+     "it": "Silhouette",
+     "en": "Silhouette"
+    },
+    "images": [
+     "titina/silhouette-01.jpg",
+     "titina/silhouette-02.jpg"
+    ]
+   },
+   {
+    "id": "telini",
+    "label": {
+     "it": "Campioni telini",
+     "en": "Fabric swatches"
+    },
+    "images": [
+     "titina/telini-01.jpg",
+     "titina/telini-02.jpg",
+     "titina/telini-03.jpg",
+     "titina/telini-04.jpg",
+     "titina/telini-05.jpg",
+     "titina/telini-06.jpg",
+     "titina/telini-07.jpg",
+     "titina/telini-08.jpg",
+     "titina/telini-09.jpg",
+     "titina/telini-10.jpg"
+    ]
+   },
+   {
+    "id": "tecnici",
+    "label": {
+     "it": "Tecnici",
+     "en": "Technical drawings"
+    },
+    "images": [
+     "titina/tecnici-01.jpg",
+     "titina/tecnici-02.jpg",
+     "titina/tecnici-03.jpg",
+     "titina/tecnici-04.jpg",
+     "titina/tecnici-05.jpg",
+     "titina/tecnici-06.jpg",
+     "titina/tecnici-07.jpg",
+     "titina/tecnici-08.jpg",
+     "titina/tecnici-09.jpg",
+     "titina/tecnici-10.jpg",
+     "titina/tecnici-11.jpg",
+     "titina/tecnici-12.jpg",
+     "titina/tecnici-13.jpg",
+     "titina/tecnici-14.jpg"
+    ]
+   },
+   {
+    "id": "filati",
+    "label": {
+     "it": "Filati",
+     "en": "Yarns"
+    },
+    "images": []
+   },
+   {
+    "id": "shooting",
+    "label": {
+     "it": "Shooting",
+     "en": "Shooting"
+    },
+    "images": [
+     "titina/shooting-01.jpg",
+     "titina/shooting-02.jpg",
+     "titina/shooting-03.jpg",
+     "titina/shooting-04.jpg",
+     "titina/shooting-05.jpg",
+     "titina/shooting-06.jpg",
+     "titina/shooting-07.jpg",
+     "titina/shooting-08.jpg",
+     "titina/shooting-09.jpg",
+     "titina/shooting-10.jpg",
+     "titina/shooting-11.jpg",
+     "titina/shooting-12.jpg",
+     "titina/shooting-13.jpg",
+     "titina/shooting-14.jpg",
+     "titina/shooting-15.jpg",
+     "titina/shooting-16.jpg"
+    ]
+   }
+  ],
+  "filati": {
+   "intro": {
+    "it": "I filati selezionati per il progetto di tesi <em>Titina</em> rappresentano un equilibrio tra ricerca tecnica e resa estetica. Colori primari, contrasti netti e materiali misti sono stati scelti per sostenere la narrazione progettuale e dare coerenza alla collezione.",
+    "en": "The yarns selected for the <em>Titina</em> thesis project strike a balance between technical research and aesthetic result. Primary colours, sharp contrasts and mixed materials were chosen to support the project’s narrative and give the collection coherence."
+   },
+   "rows": [
+    {
+     "name": {
+      "it": "Sesia, biocable black",
+      "en": "Sesia, biocable black"
+     },
+     "nm": "NM 6700",
+     "comp": {
+      "it": "100% CO",
+      "en": "100% CO"
+     }
+    },
+    {
+     "name": {
+      "it": "Lane Cardate, Canberra black",
+      "en": "Lane Cardate, Canberra black"
+     },
+     "nm": "1/15.5 NM",
+     "comp": {
+      "it": "100% cotone",
+      "en": "100% cotton"
+     }
+    },
+    {
+     "name": {
+      "it": "Filato black",
+      "en": "Filato black"
+     },
+     "nm": "—",
+     "comp": {
+      "it": "100% CO",
+      "en": "100% CO"
+     }
+    },
+    {
+     "name": {
+      "it": "LineaPiù, Angie black",
+      "en": "LineaPiù, Angie black"
+     },
+     "nm": "NM 35000",
+     "comp": {
+      "it": "75% VI – 25% PL",
+      "en": "75% VI – 25% PL"
+     }
+    },
+    {
+     "name": {
+      "it": "Filato green",
+      "en": "Filato green"
+     },
+     "nm": "—",
+     "comp": {
+      "it": "70% CO – 30% PL",
+      "en": "70% CO – 30% PL"
+     }
+    },
+    {
+     "name": {
+      "it": "LineaPiù, Angie black",
+      "en": "LineaPiù, Angie black"
+     },
+     "nm": "NM 34000",
+     "comp": {
+      "it": "75% VI – 25% PL",
+      "en": "75% VI – 25% PL"
+     }
+    },
+    {
+     "name": {
+      "it": "LineaPiù, Angie yellow",
+      "en": "LineaPiù, Angie yellow"
+     },
+     "nm": "NM 34000",
+     "comp": {
+      "it": "75% VI – 25% PL",
+      "en": "75% VI – 25% PL"
+     }
+    },
+    {
+     "name": {
+      "it": "LineaPiù, Angie heavy yellow",
+      "en": "LineaPiù, Angie heavy yellow"
+     },
+     "nm": "NM 34000",
+     "comp": {
+      "it": "75% VI – 25% PL",
+      "en": "75% VI – 25% PL"
+     }
+    },
+    {
+     "name": {
+      "it": "Filato yellow",
+      "en": "Filato yellow"
+     },
+     "nm": "—",
+     "comp": {
+      "it": "100% cotone",
+      "en": "100% cotton"
+     }
+    },
+    {
+     "name": {
+      "it": "LineaPiù, Angie green",
+      "en": "LineaPiù, Angie green"
+     },
+     "nm": "NM 34000",
+     "comp": {
+      "it": "75% VI – 25% PL",
+      "en": "75% VI – 25% PL"
+     }
+    },
+    {
+     "name": {
+      "it": "Filato Loro Piana black",
+      "en": "Filato Loro Piana black"
+     },
+     "nm": "—",
+     "comp": {
+      "it": "—",
+      "en": "—"
+     }
+    },
+    {
+     "name": {
+      "it": "Filato lana & arcobaleno black",
+      "en": "Filato lana & arcobaleno black"
+     },
+     "nm": "—",
+     "comp": {
+      "it": "100% CO",
+      "en": "100% CO"
+     }
+    }
+   ]
+  },
+  "cover": "titina/intro-01.jpg",
+  "next": "mondo-fuori"
+ },
+ {
+  "slug": "mondo-fuori",
+  "order": 2,
+  "type": "project",
+  "title": "Mondo Fuori",
+  "accent": "#9C6B43",
+  "year": "2023/24",
+  "kind": {
+   "it": "Collezione knitwear",
+   "en": "Knitwear collection"
+  },
+  "tags": [
+   "Collezioni",
+   "Knitwear"
+  ],
+  "role": {
+   "it": "Designer (progetto di gruppo)",
+   "en": "Designer (group project)"
+  },
+  "excerpt": {
+   "it": "Una riflessione su confine, pelle e protezione. Otto outfit costruiti con superfici tattili e trattamenti sperimentali, per tradurre in materia emozioni e tensioni contemporanee.",
+   "en": "A reflection on boundaries, skin and protection. Eight outfits built from tactile surfaces and experimental treatments, turning contemporary emotions and tensions into material."
+  },
+  "context": {
+   "it": "Laboratorio di sintesi finale – Knitwear Design<br>Politecnico di Milano – A.A. 2023/2024<br><br>In collaborazione con: Pasquale Lanzilotti, Luciana d’Angelo, Vinicio Caforio, Francesca Boletti, Margarida Almeida<br>Docenti: Giovanni Maria Conti, Luigi de Nardo, Laura Affinito, Martina Motta, Manuela Rubertelli, Laura Vicelli<br>Tutor: Anna Paola Braga, Diego Dani, Federica Mora, Irene Sapuppo",
+   "en": "Final Synthesis Lab – Knitwear Design<br>Politecnico di Milano – Academic Year 2023/2024<br><br>In collaboration with: Pasquale Lanzilotti, Luciana d’Angelo, Vinicio Caforio, Francesca Boletti, Margarida Almeida<br>Professors: Giovanni Maria Conti, Luigi de Nardo, Laura Affinito, Martina Motta, Manuela Rubertelli, Laura Vicelli<br>Tutors: Anna Paola Braga, Diego Dani, Federica Mora, Irene Sapuppo"
+  },
+  "paragraphs": [
+   {
+    "it": "Il progetto “Mondo Fuori” nasce come riflessione sul concetto di confine, di pelle e di protezione. Attraverso l’utilizzo di superfici tattili e trattamenti sperimentali, il gruppo ha esplorato il linguaggio della maglieria per tradurre in forma materica emozioni e tensioni contemporanee.",
+    "en": "The project “Mondo Fuori” was born as a reflection on the concept of boundary, skin, and protection. Through the use of tactile surfaces and experimental treatments, the group explored knitwear language to translate contemporary emotions and tensions into material form."
+   },
+   {
+    "it": "La collezione è composta da 8 outfit ed è stata sviluppata in collaborazione con l’Istituto dei Ciechi di Milano. L’obiettivo è quello di andare oltre la percezione visiva, ponendo massima attenzione alla percezione tattile attraverso lavorazioni che raccontano il mondo naturale.",
+    "en": "The collection is composed of 8 outfits and was developed in collaboration with the Institute for the Blind of Milan. The goal was to go beyond visual perception, focusing on tactile sensations through textures that narrate the natural world."
+   },
+   {
+    "it": "Il concept si sviluppa come un viaggio sensoriale: si parte dalle superfici rocciose delle montagne, si attraversano i boschi e le campagne, per poi arrivare alla sabbia e al mare. Gli elementi incontrati lungo il cammino sono stati reinterpretati in chiave materica per diventare punti maglia.",
+    "en": "The concept unfolds as a sensorial journey: from rocky mountain textures through forests and countryside, reaching the sand and the sea. Elements encountered along the path were reinterpreted through tactile experimentation to become knit stitches."
+   }
+  ],
+  "intro": [
+   "mondo-fuori/intro-01.jpg",
+   "mondo-fuori/intro-02.jpg",
+   "mondo-fuori/intro-03.jpg",
+   "mondo-fuori/intro-04.jpg"
+  ],
+  "lineup": {
+   "plates": [
+    "mondo-fuori/lineup-01.png"
+   ],
+   "models": [
+    {
+     "src": "mondo-fuori/modelli/look-01-fronte.png",
+     "look": 1,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "mondo-fuori/modelli/look-02-fronte.png",
+     "look": 2,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "mondo-fuori/modelli/look-03-fronte.png",
+     "look": 3,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "mondo-fuori/modelli/look-04-fronte.png",
+     "look": 4,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "mondo-fuori/modelli/look-05-fronte.png",
+     "look": 5,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "mondo-fuori/modelli/look-06-fronte.png",
+     "look": 6,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "mondo-fuori/modelli/look-07-fronte.png",
+     "look": 7,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "mondo-fuori/modelli/look-08-fronte.png",
+     "look": 8,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    }
+   ]
+  },
+  "tabs": [
+   {
+    "id": "moodboard",
+    "label": {
+     "it": "Moodboard",
+     "en": "Moodboard"
+    },
+    "images": [
+     "mondo-fuori/moodboard-01.png"
+    ]
+   },
+   {
+    "id": "outfit",
+    "label": {
+     "it": "Outfit",
+     "en": "Outfit"
+    },
+    "images": [
+     "mondo-fuori/outfit-01.jpg",
+     "mondo-fuori/outfit-02.jpg",
+     "mondo-fuori/outfit-03.jpg",
+     "mondo-fuori/outfit-04.jpg",
+     "mondo-fuori/outfit-05.jpg",
+     "mondo-fuori/outfit-06.jpg",
+     "mondo-fuori/outfit-07.jpg",
+     "mondo-fuori/outfit-08.jpg"
+    ]
+   },
+   {
+    "id": "schede",
+    "label": {
+     "it": "Schede tecniche",
+     "en": "Technical sheets"
+    },
+    "images": [
+     "mondo-fuori/schede-01.jpg",
+     "mondo-fuori/schede-02.jpg",
+     "mondo-fuori/schede-03.jpg",
+     "mondo-fuori/schede-04.jpg",
+     "mondo-fuori/schede-05.jpg"
+    ]
+   },
+   {
+    "id": "shooting",
+    "label": {
+     "it": "Shooting",
+     "en": "Shooting"
+    },
+    "images": [
+     "mondo-fuori/shooting-01.jpg",
+     "mondo-fuori/shooting-02.jpg",
+     "mondo-fuori/shooting-03.jpg",
+     "mondo-fuori/shooting-04.jpg",
+     "mondo-fuori/shooting-05.jpg",
+     "mondo-fuori/shooting-06.jpg",
+     "mondo-fuori/shooting-07.jpg",
+     "mondo-fuori/shooting-08.jpg"
+    ]
+   },
+   {
+    "id": "filati",
+    "label": {
+     "it": "Filati",
+     "en": "Yarns"
+    },
+    "images": []
+   }
+  ],
+  "filati": {
+   "intro": {
+    "it": "I filati selezionati per questa collezione rappresentano un equilibrio tra tradizione artigianale, sperimentazione tattile e sostenibilità. Dalla lana vergine al cashmere, passando per misti tecnici e fibre naturali, ogni filato è stato scelto per esprimere al meglio la sensazione del paesaggio a cui si ispira.",
+    "en": "The yarns selected for this collection represent a balance between craftsmanship, tactile experimentation and sustainability. From virgin wool to cashmere, through technical blends and natural fibers, each yarn was chosen to best convey the feeling of the landscape that inspired it."
+   },
+   "rows": [
+    {
+     "name": {
+      "it": "marrone panta",
+      "en": "brown panta"
+     },
+     "nm": "Zegna Baruffa – NM 2/48000",
+     "comp": {
+      "it": "100% lana vergine",
+      "en": "100% virgin wool"
+     }
+    },
+    {
+     "name": {
+      "it": "marrone 1",
+      "en": "brown 1"
+     },
+     "nm": "NM 2/50000",
+     "comp": {
+      "it": "100% lana",
+      "en": "100% wool"
+     }
+    },
+    {
+     "name": {
+      "it": "marrone 2 (in uni)",
+      "en": "brown 2 (uni)"
+     },
+     "nm": "Zegna Baruffa – NM 2/48000",
+     "comp": {
+      "it": "100% lana vergine",
+      "en": "100% virgin wool"
+     }
+    },
+    {
+     "name": {
+      "it": "bianco bouclé",
+      "en": "white bouclé"
+     },
+     "nm": "NM 2/16000",
+     "comp": {
+      "it": "50% cotone, 50% poliestere",
+      "en": "50% cotton, 50% polyester"
+     }
+    },
+    {
+     "name": {
+      "it": "neve fresca",
+      "en": "fresh snow"
+     },
+     "nm": "Mondial – NM 5000",
+     "comp": {
+      "it": "80% lana merino, 20% microfibra",
+      "en": "80% merino wool, 20% microfiber"
+     }
+    },
+    {
+     "name": {
+      "it": "sottobosco",
+      "en": "sottobosco"
+     },
+     "nm": "Zegna Baruffa – NM 2/48000",
+     "comp": {
+      "it": "100% lana vergine",
+      "en": "100% virgin wool"
+     }
+    },
+    {
+     "name": {
+      "it": "sottobosco",
+      "en": "sottobosco"
+     },
+     "nm": "NM 2/48000",
+     "comp": {
+      "it": "100% lana",
+      "en": "100% wool"
+     }
+    },
+    {
+     "name": {
+      "it": "cellulosa",
+      "en": "cellulosa"
+     },
+     "nm": "NM 1250",
+     "comp": {
+      "it": "100% cellulosa",
+      "en": "100% cellulose"
+     }
+    },
+    {
+     "name": {
+      "it": "melange marrone maglietta",
+      "en": "brown melange t-shirt"
+     },
+     "nm": "NM 2/50000",
+     "comp": {
+      "it": "100% cotone",
+      "en": "100% cotton"
+     }
+    },
+    {
+     "name": {
+      "it": "Lanari",
+      "en": "Lanari"
+     },
+     "nm": "NM 10000",
+     "comp": {
+      "it": "80% skid mohair, 20% poliammide",
+      "en": "80% skid mohair, 20% polyamide"
+     }
+    },
+    {
+     "name": {
+      "it": "Filart",
+      "en": "Filart"
+     },
+     "nm": "NM 40000",
+     "comp": {
+      "it": "100% cotone",
+      "en": "100% cotton"
+     }
+    },
+    {
+     "name": {
+      "it": "Cariaggi",
+      "en": "Cariaggi"
+     },
+     "nm": "NM 2/28000",
+     "comp": {
+      "it": "100% cashmere",
+      "en": "100% cashmere"
+     }
+    },
+    {
+     "name": {
+      "it": "Fullonica SNC",
+      "en": "Fullonica SNC"
+     },
+     "nm": "NM 2/60000",
+     "comp": {
+      "it": "100% lana",
+      "en": "100% wool"
+     }
+    },
+    {
+     "name": {
+      "it": "Gruppo Filpucci",
+      "en": "Gruppo Filpucci"
+     },
+     "nm": "NM 40000",
+     "comp": {
+      "it": "100% cotone",
+      "en": "100% cotton"
+     }
+    },
+    {
+     "name": {
+      "it": "Prisma Ricerche",
+      "en": "Prisma Ricerche"
+     },
+     "nm": "NM 2/35",
+     "comp": {
+      "it": "83% viscosa, 17% poliestere",
+      "en": "83% viscose, 17% polyester"
+     }
+    },
+    {
+     "name": {
+      "it": "Lafil",
+      "en": "Lafil"
+     },
+     "nm": "NM 44000",
+     "comp": {
+      "it": "100% poliestere",
+      "en": "100% polyester"
+     }
+    },
+    {
+     "name": {
+      "it": "Manifatture Tessili Biellesi",
+      "en": "Manifatture Tessili Biellesi"
+     },
+     "nm": "NM 4/1000000",
+     "comp": {
+      "it": "100% cotone",
+      "en": "100% cotton"
+     }
+    },
+    {
+     "name": {
+      "it": "—",
+      "en": "—"
+     },
+     "nm": "NM 40000",
+     "comp": {
+      "it": "100% cotone",
+      "en": "100% cotton"
+     }
+    },
+    {
+     "name": {
+      "it": "—",
+      "en": "—"
+     },
+     "nm": "NM 38000",
+     "comp": {
+      "it": "7% elastomero, 83% poliammide",
+      "en": "7% elastomer, 83% polyamide"
+     }
+    },
+    {
+     "name": {
+      "it": "Kypritzu",
+      "en": "Kypritzu"
+     },
+     "nm": "NM 60000",
+     "comp": {
+      "it": "100% poliestere",
+      "en": "100% polyester"
+     }
+    },
+    {
+     "name": {
+      "it": "—",
+      "en": "—"
+     },
+     "nm": "NM 40000",
+     "comp": {
+      "it": "50% poliestere, 50% cotone",
+      "en": "50% polyester, 50% cotton"
+     }
+    },
+    {
+     "name": {
+      "it": "Lurex",
+      "en": "Lurex"
+     },
+     "nm": "NM 65000",
+     "comp": {
+      "it": "100% poliestere",
+      "en": "100% polyester"
+     }
+    },
+    {
+     "name": {
+      "it": "—",
+      "en": "—"
+     },
+     "nm": "NM 44000",
+     "comp": {
+      "it": "100% poliestere",
+      "en": "100% polyester"
+     }
+    },
+    {
+     "name": {
+      "it": "Lineapiù Italia S.P.A.",
+      "en": "Lineapiù Italia S.P.A."
+     },
+     "nm": "NM 16000",
+     "comp": {
+      "it": "100% cotone",
+      "en": "100% cotton"
+     }
+    },
+    {
+     "name": {
+      "it": "Cariaggi",
+      "en": "Cariaggi"
+     },
+     "nm": "NM 2/56000",
+     "comp": {
+      "it": "70% cashmere, 30% seta",
+      "en": "70% cashmere, 30% silk"
+     }
+    }
+   ]
+  },
+  "cover": "mondo-fuori/intro-01.jpg",
+  "next": "luddovio"
+ },
+ {
+  "slug": "luddovio",
+  "order": 3,
+  "type": "project",
+  "title": "Luddovio",
+  "accent": "#39D7FC",
+  "year": "2023/24",
+  "kind": {
+   "it": "Capsule collection",
+   "en": "Capsule collection"
+  },
+  "tags": [
+   "Collezioni"
+  ],
+  "role": {
+   "it": "Designer (progetto di gruppo)",
+   "en": "Designer (group project)"
+  },
+  "excerpt": {
+   "it": "Quattordici outfit per una collaborazione immaginaria tra Jonathan Anderson e Mares: il neoprene e i dettagli della subacquea portati nello spazio urbano, con ironia e volumi inattesi.",
+   "en": "Fourteen outfits for an imaginary collaboration between Jonathan Anderson and Mares: neoprene and diving details brought into the city, with irony and unexpected volumes."
+  },
+  "context": {
+   "it": "Capsule Collection – Fashion Design<br>Politecnico di Milano – A.A. 2023/2024<br><br>In collaborazione con: Vinicio Caforio, Niccolò Martella, Carlo Salzano, Vittoria Vacca<br>Professori: Fiorenza Spezzapria, Caria Vollero",
+   "en": "Capsule Collection – Fashion Design<br>Politecnico di Milano – Academic Year 2023/2024<br><br>In collaboration with: Vinicio Caforio, Niccolò Martella, Carlo Salzano, Vittoria Vacca<br>Professors: Fiorenza Spezzapria, Caria Vollero"
+  },
+  "paragraphs": [
+   {
+    "it": "“Luddovio” è una capsule collection composta da 14 outfit e immaginata come una collaborazione ipotetica tra il designer Jonathan Anderson e il brand di attrezzature subacquee Mares. Il progetto nasce dalla volontà di portare gli stilemi del mondo della subacquea nello spazio urbano, reinterpretando materiali tecnici e dettagli funzionali in chiave giocosa e concettuale.",
+    "en": "“Luddovio” is a 14-outfit capsule collection designed as a fictional collaboration between designer Jonathan Anderson and scuba equipment brand Mares. The project aims to bring the aesthetics of underwater gear into urban fashion, reimagining technical materials and functional details with a playful, conceptual twist."
+   },
+   {
+    "it": "Attraverso il linguaggio ironico e decostruito di Anderson, i capi iconici di Mares vengono decontestualizzati e trasformati in nuovi elementi di stile. Il neoprene, materiale principale del progetto, si presta a manipolazioni creative che danno forma a silhouette avvolgenti, zip a vista, imbottiture scolpite e volumi inaspettati. Il risultato è una collezione che rompe le barriere tra sportività e moda sperimentale.",
+    "en": "Using Anderson’s ironic and deconstructed design language, Mares’ iconic pieces are reinterpreted as new fashion statements. Neoprene, the collection’s core material, is creatively manipulated to shape sculpted padding, exposed zippers, and unexpected volumes. The result is a collection that blurs the lines between sportswear and experimental fashion."
+   },
+   {
+    "it": "Ogni outfit racconta un frammento di questo universo ibrido, dove funzionalità tecnica e ricerca estetica si fondono. Il progetto invita a riflettere su come la moda possa assorbire e trasformare codici visivi e materiali provenienti da altri mondi, trovando nuovi spazi narrativi nelle contraddizioni e nei cortocircuiti visivi.",
+    "en": "Each outfit tells a fragment of this hybrid universe, where technical functionality and aesthetic exploration merge. The project invites us to reflect on how fashion can absorb and transform visual codes and materials from different contexts, finding new narrative spaces in contradiction and visual short circuits."
+   }
+  ],
+  "intro": [
+   "luddovio/intro-01.jpg",
+   "luddovio/intro-02.jpg",
+   "luddovio/intro-03.jpg",
+   "luddovio/intro-04.jpg"
+  ],
+  "lineup": {
+   "plates": [
+    "luddovio/lineup-01.jpg"
+   ],
+   "models": [
+    {
+     "src": "luddovio/modelli/look-01-figurino.png",
+     "look": 1,
+     "side": {
+      "it": "Figurino",
+      "en": "Sketch"
+     }
+    },
+    {
+     "src": "luddovio/modelli/look-02-figurino.png",
+     "look": 2,
+     "side": {
+      "it": "Figurino",
+      "en": "Sketch"
+     }
+    },
+    {
+     "src": "luddovio/modelli/look-03-figurino.png",
+     "look": 3,
+     "side": {
+      "it": "Figurino",
+      "en": "Sketch"
+     }
+    },
+    {
+     "src": "luddovio/modelli/look-05-figurino.png",
+     "look": 5,
+     "side": {
+      "it": "Figurino",
+      "en": "Sketch"
+     }
+    },
+    {
+     "src": "luddovio/modelli/look-06-figurino.png",
+     "look": 6,
+     "side": {
+      "it": "Figurino",
+      "en": "Sketch"
+     }
+    },
+    {
+     "src": "luddovio/modelli/look-08-figurino.png",
+     "look": 8,
+     "side": {
+      "it": "Figurino",
+      "en": "Sketch"
+     }
+    },
+    {
+     "src": "luddovio/modelli/look-09-figurino.png",
+     "look": 9,
+     "side": {
+      "it": "Figurino",
+      "en": "Sketch"
+     }
+    },
+    {
+     "src": "luddovio/modelli/look-11-figurino.png",
+     "look": 11,
+     "side": {
+      "it": "Figurino",
+      "en": "Sketch"
+     }
+    },
+    {
+     "src": "luddovio/modelli/look-13-figurino.png",
+     "look": 13,
+     "side": {
+      "it": "Figurino",
+      "en": "Sketch"
+     }
+    },
+    {
+     "src": "luddovio/modelli/look-14-figurino.png",
+     "look": 14,
+     "side": {
+      "it": "Figurino",
+      "en": "Sketch"
+     }
+    }
+   ]
+  },
+  "tabs": [
+   {
+    "id": "moodboard",
+    "label": {
+     "it": "Moodboard",
+     "en": "Moodboard"
+    },
+    "images": [
+     "luddovio/moodboard-01.jpg"
+    ]
+   },
+   {
+    "id": "outfit",
+    "label": {
+     "it": "Outfit",
+     "en": "Outfit"
+    },
+    "images": [
+     "luddovio/outfit-01.jpg",
+     "luddovio/outfit-02.jpg",
+     "luddovio/outfit-03.jpg",
+     "luddovio/outfit-04.jpg",
+     "luddovio/outfit-05.jpg",
+     "luddovio/outfit-06.jpg",
+     "luddovio/outfit-07.jpg",
+     "luddovio/outfit-08.jpg",
+     "luddovio/outfit-09.jpg",
+     "luddovio/outfit-10.jpg",
+     "luddovio/outfit-11.jpg",
+     "luddovio/outfit-12.jpg",
+     "luddovio/outfit-13.jpg",
+     "luddovio/outfit-14.jpg"
+    ]
+   },
+   {
+    "id": "magazine",
+    "label": {
+     "it": "Magazine",
+     "en": "Magazine"
+    },
+    "images": [
+     "luddovio/magazine-01.jpg",
+     "luddovio/magazine-02.jpg",
+     "luddovio/magazine-03.jpg",
+     "luddovio/magazine-04.jpg",
+     "luddovio/magazine-05.jpg",
+     "luddovio/magazine-06.jpg",
+     "luddovio/magazine-07.jpg",
+     "luddovio/magazine-08.jpg",
+     "luddovio/magazine-09.jpg",
+     "luddovio/magazine-10.jpg",
+     "luddovio/magazine-11.jpg",
+     "luddovio/magazine-12.jpg",
+     "luddovio/magazine-13.jpg",
+     "luddovio/magazine-14.jpg",
+     "luddovio/magazine-15.jpg",
+     "luddovio/magazine-16.jpg",
+     "luddovio/magazine-17.jpg",
+     "luddovio/magazine-18.jpg"
+    ],
+    "spread": true
+   },
+   {
+    "id": "schede",
+    "label": {
+     "it": "Schede tecniche",
+     "en": "Technical sheets"
+    },
+    "images": [
+     "luddovio/schede-01.jpg",
+     "luddovio/schede-02.jpg",
+     "luddovio/schede-03.jpg",
+     "luddovio/schede-04.jpg",
+     "luddovio/schede-05.jpg"
+    ]
+   },
+   {
+    "id": "approfondimenti",
+    "label": {
+     "it": "Approfondimenti",
+     "en": "Insights"
+    },
+    "images": [
+     "luddovio/approfondimenti-01.jpg",
+     "luddovio/approfondimenti-02.jpg",
+     "luddovio/approfondimenti-03.jpg"
+    ]
+   }
+  ],
+  "cover": "luddovio/intro-01.jpg",
+  "next": "gettin-busy"
+ },
+ {
+  "slug": "gettin-busy",
+  "order": 4,
+  "type": "project",
+  "title": "Gettin’ Busy",
+  "accent": "#F44EDB",
+  "year": "2023/24",
+  "kind": {
+   "it": "Progetto personale",
+   "en": "Personal project"
+  },
+  "tags": [
+   "Collezioni"
+  ],
+  "role": {
+   "it": "Designer",
+   "en": "Designer"
+  },
+  "excerpt": {
+   "it": "Una micro-capsule come esercizio di stile e ritmo visivo: stratificazione, ripetizione e segno grafico su silhouette pragmatiche, in dialogo con l’immaginario urbano contemporaneo.",
+   "en": "A micro-capsule as an exercise in style and visual rhythm: layering, repetition and graphic marks on pragmatic silhouettes, in dialogue with contemporary urban imagery."
+  },
+  "context": {
+   "it": "Progetto personale – Fashion Design<br>Politecnico di Milano – A.A. 2023/2024",
+   "en": "Personal Project – Fashion Design<br>Politecnico di Milano – Academic Year 2023/2024"
+  },
+  "paragraphs": [
+   {
+    "it": "“Gettin’ Busy” nasce come esercizio di stile e ritmo visivo: una micro-capsule essenziale che lavora per stratificazione, ripetizione e segno grafico. Le silhouettes restano pragmatiche e versatili; la superficie diventa il luogo della variazione attraverso stampe, applicazioni e dettagli tecnici.",
+    "en": "“Gettin’ Busy” is conceived as an exercise in style and visual rhythm: a compact capsule built on layering, repetition and graphic marks. Silhouettes are pragmatic and versatile; surfaces host variations via prints, applications and technical details."
+   },
+   {
+    "it": "Il progetto sperimenta un lessico immediato, pensato per entrare in dialogo con l’immaginario urbano contemporaneo: segni netti, cromie compatte, funzionalità dichiarata. La ricerca privilegia processi riproducibili e componenti a basso impatto, con particolare attenzione alla durata dei capi.",
+    "en": "The project explores an immediate vocabulary designed to converse with a contemporary urban imagery: crisp lines, solid color blocks, explicit functionality. Research focuses on reproducible processes and lower-impact components, with particular attention to garment longevity."
+   }
+  ],
+  "intro": [
+   "gettin-busy/intro-01.jpg"
+  ],
+  "lineup": {
+   "plates": [
+    "gettin-busy/outfit-01.jpg"
+   ],
+   "models": [
+    {
+     "src": "gettin-busy/modelli/look-01-fronte.png",
+     "look": 1,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "gettin-busy/modelli/look-01-retro.png",
+     "look": 1,
+     "side": {
+      "it": "Retro",
+      "en": "Back"
+     }
+    },
+    {
+     "src": "gettin-busy/modelli/look-02-fronte.png",
+     "look": 2,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "gettin-busy/modelli/look-02-retro.png",
+     "look": 2,
+     "side": {
+      "it": "Retro",
+      "en": "Back"
+     }
+    },
+    {
+     "src": "gettin-busy/modelli/look-03-fronte.png",
+     "look": 3,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "gettin-busy/modelli/look-03-retro.png",
+     "look": 3,
+     "side": {
+      "it": "Retro",
+      "en": "Back"
+     }
+    },
+    {
+     "src": "gettin-busy/modelli/look-04-fronte.png",
+     "look": 4,
+     "side": {
+      "it": "Fronte",
+      "en": "Front"
+     }
+    },
+    {
+     "src": "gettin-busy/modelli/look-04-retro.png",
+     "look": 4,
+     "side": {
+      "it": "Retro",
+      "en": "Back"
+     }
+    }
+   ]
+  },
+  "tabs": [
+   {
+    "id": "moodboard",
+    "label": {
+     "it": "Moodboard",
+     "en": "Moodboard"
+    },
+    "images": [
+     "gettin-busy/moodboard-01.jpg"
+    ]
+   },
+   {
+    "id": "outfit",
+    "label": {
+     "it": "Outfit",
+     "en": "Outfit"
+    },
+    "images": [
+     "gettin-busy/outfit-01.jpg",
+     "gettin-busy/outfit-02.jpg",
+     "gettin-busy/outfit-03.jpg",
+     "gettin-busy/outfit-04.jpg",
+     "gettin-busy/outfit-05.jpg"
+    ]
+   },
+   {
+    "id": "schede",
+    "label": {
+     "it": "Schede tecniche",
+     "en": "Technical sheets"
+    },
+    "images": [
+     "gettin-busy/schede-01.jpg",
+     "gettin-busy/schede-02.jpg",
+     "gettin-busy/schede-03.jpg",
+     "gettin-busy/schede-04.jpg",
+     "gettin-busy/schede-05.jpg",
+     "gettin-busy/schede-06.jpg",
+     "gettin-busy/schede-07.jpg",
+     "gettin-busy/schede-08.jpg",
+     "gettin-busy/schede-09.jpg",
+     "gettin-busy/schede-10.jpg"
+    ]
+   },
+   {
+    "id": "approfondimenti",
+    "label": {
+     "it": "Approfondimenti",
+     "en": "Insights"
+    },
+    "images": [
+     "gettin-busy/approfondimenti-01.jpg",
+     "gettin-busy/approfondimenti-02.jpg",
+     "gettin-busy/approfondimenti-03.jpg",
+     "gettin-busy/approfondimenti-04.jpg",
+     "gettin-busy/approfondimenti-05.jpg",
+     "gettin-busy/approfondimenti-06.jpg"
+    ]
+   }
+  ],
+  "cover": "gettin-busy/intro-01.jpg",
+  "next": "numero-magazine"
+ },
+ {
+  "slug": "numero-magazine",
+  "order": 5,
+  "type": "editorial",
+  "title": "Numero Magazine",
+  "accent": "#C8B79A",
+  "year": "Università",
+  "kind": {
+   "it": "Fashion photography",
+   "en": "Fashion photography"
+  },
+  "tags": [
+   "Editoriali",
+   "Fashion photography"
+  ],
+  "role": {
+   "it": "Direzione artistica, casting, concept",
+   "en": "Art direction, casting, concept"
+  },
+  "excerpt": {
+   "it": "La costruzione di una rivista dall’interno: concept visivo, casting e sequenza narrativa per capire come ritmo, layout e fotografia raccontano insieme una storia di moda.",
+   "en": "Building a magazine from the inside: visual concept, casting and narrative sequence, to understand how rhythm, layout and photography tell a fashion story together."
+  },
+  "context": {
+   "it": "Progetto universitario – Fashion Photography",
+   "en": "Academic project – Fashion Photography"
+  },
+  "paragraphs": [
+   {
+    "it": "Il progetto universitario “Numero Magazine” è nato come esercizio di fotografia di moda, con l’obiettivo di sperimentare il processo editoriale dietro la costruzione di una rivista. Il compito prevedeva di selezionare un magazine e svilupparne una simulazione di venti pagine, curando direzione artistica, casting, concept visivo e sequenza narrativa.",
+    "en": "The academic project “Numero Magazine” was conceived as a fashion photography exercise to explore the editorial process behind building a magazine. The assignment required choosing a reference title and developing a twenty-page mock-up, shaping art direction, casting, visual concept, and narrative sequencing."
+   },
+   {
+    "it": "L’esperienza mi ha permesso di trasformare un immaginario in un artefatto coerente, comprendendo come ritmo, layout e fotografia concorrano alla costruzione di una storia di moda.",
+    "en": "The experience allowed me to translate imagination into a coherent artifact, learning how rhythm, layout, and photography collaborate in crafting a fashion story."
+   }
+  ],
+  "gallery": [
+   "numero-magazine/gallery-01.jpg",
+   "numero-magazine/gallery-02.jpg",
+   "numero-magazine/gallery-03.jpg",
+   "numero-magazine/gallery-04.jpg",
+   "numero-magazine/gallery-05.jpg",
+   "numero-magazine/gallery-06.jpg",
+   "numero-magazine/gallery-07.jpg",
+   "numero-magazine/gallery-08.jpg",
+   "numero-magazine/gallery-09.jpg",
+   "numero-magazine/gallery-10.jpg",
+   "numero-magazine/gallery-11.jpg"
+  ],
+  "cover": "numero-magazine/gallery-01.jpg",
+  "next": "italian-realism"
+ },
+ {
+  "slug": "italian-realism",
+  "order": 6,
+  "type": "editorial",
+  "title": "Italian Realism",
+  "accent": "#C8B79A",
+  "year": "The Mode",
+  "kind": {
+   "it": "Editoriale",
+   "en": "Editorial"
+  },
+  "tags": [
+   "Editoriali",
+   "Styling"
+  ],
+  "role": {
+   "it": "Stylist",
+   "en": "Stylist"
+  },
+  "article": {
+   "label": "The Mode – Snob Non per Tutti",
+   "href": "https://www.snobnonpertutti.it/themode/italian-realism/77182"
+  },
+  "excerpt": {
+   "it": "Una sensibilità contemporanea radicata nella cultura italiana: eleganza essenziale, contesti reali, dettagli che parlano di quotidiano.",
+   "en": "A contemporary sensibility rooted in Italian culture: essential elegance, real settings, details that speak of everyday life."
+  },
+  "context": {
+   "it": "Editoriale – The Mode / Snob Non per Tutti",
+   "en": "Editorial – The Mode / Snob Non per Tutti"
+  },
+  "paragraphs": [
+   {
+    "it": "“Italian Realism” racconta una sensibilità contemporanea radicata nella cultura italiana: eleganza essenziale, contesti reali, dettagli che parlano di quotidiano. In questo progetto ho ricoperto il ruolo di <b>stylist</b>, lavorando fianco a fianco con <b>Tommaso Basilio</b> alla costruzione dei look e dell’immaginario visivo.",
+    "en": "“Italian Realism” explores a contemporary sensibility rooted in Italian culture: essential elegance, real settings, details that speak of everyday life. In this project, I served as <b>stylist</b>, working closely with <b>Tommaso Basilio</b> on both looks and visual narrative."
+   }
+  ],
+  "gallery": [
+   "italian-realism/gallery-01.jpg",
+   "italian-realism/gallery-02.jpg",
+   "italian-realism/gallery-03.jpg",
+   "italian-realism/gallery-04.jpg",
+   "italian-realism/gallery-05.jpg"
+  ],
+  "cover": "italian-realism/gallery-01.jpg",
+  "next": "gentleman-oliviero-toscani"
+ },
+ {
+  "slug": "gentleman-oliviero-toscani",
+  "order": 7,
+  "type": "editorial",
+  "title": "Gentleman",
+  "subtitle": "Oliviero Toscani",
+  "accent": "#C8B79A",
+  "year": "Oliviero Toscani",
+  "kind": {
+   "it": "Editoriale",
+   "en": "Editorial"
+  },
+  "tags": [
+   "Editoriali",
+   "Styling"
+  ],
+  "role": {
+   "it": "Stylist",
+   "en": "Stylist"
+  },
+  "article": {
+   "label": "Milano Finanza – Gentleman",
+   "href": "https://www.milanofinanza.it/news/oliviero-toscani-e-gentleman-le-ultime-foto-scattate-dal-maestro-della-fotografia-202501141204327777"
+  },
+  "excerpt": {
+   "it": "Uno degli ultimi shooting del maestro Oliviero Toscani: una direzione provocatoria e lucidissima, con il lavoro di styling al servizio della forza comunicativa degli scatti.",
+   "en": "One of the last shoots by master photographer Oliviero Toscani: a provocative, razor-sharp direction, with styling at the service of the images’ communicative power."
+  },
+  "context": {
+   "it": "Editoriale – Gentleman",
+   "en": "Editorial – Gentleman"
+  },
+  "paragraphs": [
+   {
+    "it": "Il progetto ha rappresentato un’occasione unica per partecipare a uno degli ultimi shooting realizzati dal maestro della fotografia <b>Oliviero Toscani</b>. La sua direzione, provocatoria e lucidissima, ha orientato ogni scelta d’immagine. In questo contesto, il mio ruolo è stato quello di <b>stylist</b>, al fianco di <b>Tommaso Basilio</b>, contribuendo alla selezione e costruzione dei look per esaltare la forza comunicativa degli scatti.",
+    "en": "This project offered a unique opportunity to take part in one of the latest shoots by master photographer <b>Oliviero Toscani</b>. His provocative, razor-sharp direction guided every visual decision. Within this context, I worked as <b>stylist</b>, alongside <b>Tommaso Basilio</b>, shaping and refining the looks to amplify the communicative power of the images."
+   }
+  ],
+  "gallery": [
+   "gentleman/gallery-01.png",
+   "gentleman/gallery-02.png",
+   "gentleman/gallery-03.png",
+   "gentleman/gallery-04.jpg"
+  ],
+  "cover": "gentleman/gallery-01.png",
+  "next": "titina"
+ }
+]

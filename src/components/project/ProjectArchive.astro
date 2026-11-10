@@ -1,0 +1,396 @@
+---
+/**
+ * Archivio del progetto: tab con pattern ARIA (tablist / tab / tabpanel), tutti i pannelli
+ * già nell'HTML. Ogni tavola apre il lightbox (gruppo = la tab). La tab "filati" non ha
+ * immagini: mostra p.filati come tabella. Senza JS le tab spariscono e i pannelli si
+ * leggono uno sotto l'altro. Logica in src/scripts/project.ts.
+ */
+import T from '../T.astro';
+import Plate from './Plate.astro';
+import { img } from '../../lib/images';
+import { ui, bi, type Bi } from '../../lib/i18n';
+import { pad2, type Project, type Tab } from '../../lib/data';
+
+interface Props {
+  p: Project;
+}
+
+const { p } = Astro.props;
+
+type Layout = 'grid' | 'portrait' | 'single' | 'spread';
+type Item = Tab & { kind: 'plates' | 'yarns'; count: number; ar: number; layout: Layout };
+
+const median = (xs: number[]) => {
+  const s = [...xs].sort((a, b) => a - b);
+  const m = s.length >> 1;
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+};
+
+const items: Item[] = (p.tabs ?? []).flatMap((t): Item[] => {
+  if (t.images.length) {
+    // riquadro uniforme per tab (rapporto mediano), le tavole stanno dentro con contain
+    const ar = median(t.images.map((x) => img(x).width / img(x).height));
+    const layout: Layout = t.spread ? 'spread' : t.images.length === 1 ? 'single' : ar < 0.9 ? 'portrait' : 'grid';
+    return [{ ...t, kind: 'plates', count: t.images.length, ar, layout }];
+  }
+  if (p.filati?.rows.length) return [{ ...t, kind: 'yarns', count: p.filati.rows.length, ar: 1, layout: 'grid' }];
+  return [];
+});
+
+const sizesFor: Record<Layout, string> = {
+  grid: '(min-width: 1320px) 608px, (min-width: 968px) 47vw, calc(100vw - 32px)',
+  portrait: '(min-width: 1320px) 300px, (min-width: 900px) 32vw, (min-width: 600px) 47vw, calc(100vw - 32px)',
+  single: '(min-width: 1320px) 1240px, calc(100vw - 32px)',
+  spread: '(min-width: 700px) 46vw, calc(100vw - 32px)',
+};
+const widthsFor: Record<Layout, number[]> = {
+  grid: [400, 640, 960, 1280],
+  portrait: [300, 480, 640, 960],
+  single: [600, 900, 1240, 1600, 2000, 2480],
+  spread: [400, 640, 960, 1280],
+};
+
+const countLabel = (t: Item): Bi =>
+  t.kind === 'yarns'
+    ? bi(`${t.count} ${ui.yarns.it}`, `${t.count} ${ui.yarns.en}`)
+    : t.count === 1
+      ? bi(`1 ${ui.plate.it.toLowerCase()}`, `1 ${ui.plate.en.toLowerCase()}`)
+      : bi(`${t.count} ${ui.plates.it}`, `${t.count} ${ui.plates.en}`);
+
+// Magazine a doppia pagina: prima e ultima pagina da sole, in mezzo coppie sinistra/destra
+const spreadClass = (k: number, total: number) =>
+  k === 0 || k === total - 1 ? 'is-solo' : k % 2 === 1 ? 'is-left' : 'is-right';
+
+const yarns = p.filati;
+---
+<section class="pj-archive" aria-labelledby="pj-archive-title" data-archive>
+  <div class="wrap">
+    <h2 id="pj-archive-title" class="pj-archive__title display"><T t={ui.archive} /></h2>
+  </div>
+
+  <div class="pj-tabs-bar" data-tabs-bar>
+    <div class="wrap">
+      <div class="pj-tabs" role="tablist" aria-labelledby="pj-archive-title">
+        {items.map((t, i) => (
+          <button
+            type="button"
+            role="tab"
+            class="pj-tab"
+            id={`pj-tab-${t.id}`}
+            aria-controls={`pj-panel-${t.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+          >
+            <T t={t.label} />
+            <span class="pj-tab__n" aria-hidden="true">{pad2(t.count)}</span>
+            <span class="sr-only">, <T t={countLabel(t)} /></span>
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap pj-panels" data-panels>
+    {items.map((t, i) => (
+      <div
+        class="pj-panel"
+        role="tabpanel"
+        id={`pj-panel-${t.id}`}
+        aria-labelledby={`pj-tab-${t.id}`}
+        tabindex={t.kind === 'yarns' ? 0 : undefined}
+        hidden={i !== 0}
+      >
+        <h3 class="pj-panel__title bold-lower">
+          <T t={t.label} /> <span class="label">{pad2(t.count)}</span>
+        </h3>
+
+        {t.kind === 'plates' ? (
+          <div class:list={['pj-grid', `pj-grid--${t.layout}`]}>
+            {t.images.map((path, k) => (
+              <Plate
+                class={t.layout === 'spread' ? spreadClass(k, t.count) : undefined}
+                path={path}
+                group={`tab-${t.id}`}
+                alt={`${p.title} — ${t.label.it}, tavola ${k + 1} di ${t.count}`}
+                caption={bi(
+                  `${ui.plate.it} ${pad2(k + 1)} / ${pad2(t.count)}`,
+                  `${ui.plate.en} ${pad2(k + 1)} / ${pad2(t.count)}`,
+                )}
+                lbCaption={bi(
+                  `${t.label.it} — ${ui.plate.it} ${pad2(k + 1)} / ${pad2(t.count)}`,
+                  `${t.label.en} — ${ui.plate.en} ${pad2(k + 1)} / ${pad2(t.count)}`,
+                )}
+                ar={t.layout === 'single' ? undefined : t.ar}
+                sizes={sizesFor[t.layout]}
+                widths={widthsFor[t.layout]}
+              />
+            ))}
+          </div>
+        ) : (
+          yarns && (
+            <div class="pj-yarns">
+              <T t={yarns.intro} as="p" html class="pj-yarns__intro" />
+              <table class="pj-yarns__table" role="table">
+                <caption class="sr-only">
+                  <T t={bi(`Filati utilizzati nel progetto ${p.title}`, `Yarns used in the ${p.title} project`)} />
+                </caption>
+                <thead role="rowgroup">
+                  <tr role="row">
+                    <th role="columnheader" scope="col"><T t={ui.yarn} /></th>
+                    <th role="columnheader" scope="col"><T t={ui.count} /></th>
+                    <th role="columnheader" scope="col"><T t={ui.composition} /></th>
+                  </tr>
+                </thead>
+                <tbody role="rowgroup">
+                  {yarns.rows.map((r) => (
+                    <tr role="row">
+                      <td role="cell"><T t={r.name} /></td>
+                      <td role="cell">
+                        <span class="pj-yarns__k label" aria-hidden="true"><T t={ui.count} /></span>
+                        <span>{r.nm}</span>
+                      </td>
+                      <td role="cell">
+                        <span class="pj-yarns__k label" aria-hidden="true"><T t={ui.composition} /></span>
+                        <T t={r.comp} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        )}
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .pj-archive {
+    padding-block: var(--section);
+    border-top: 1px solid var(--line);
+  }
+
+  .pj-archive__title {
+    font-size: var(--step-4);
+    color: var(--paper);
+    margin-bottom: var(--space-xl);
+    max-width: 12ch;
+  }
+
+  /* barra delle tab: resta sotto l'header mentre si sfogliano i pannelli */
+  .pj-tabs-bar {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 5;
+    background: var(--ink);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .pj-tabs {
+    display: flex;
+    gap: clamp(8px, 2vw, 24px);
+    margin-inline: -8px;
+    padding-inline: 8px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 8px;
+    scrollbar-width: none;
+  }
+  .pj-tabs::-webkit-scrollbar { display: none; }
+
+  /* sfumatura di bordo quando la barra continua (data-fade da project.ts) */
+  .pj-tabs[data-fade='end'] {
+    -webkit-mask-image: linear-gradient(90deg, black calc(100% - 56px), transparent);
+    mask-image: linear-gradient(90deg, black calc(100% - 56px), transparent);
+  }
+  .pj-tabs[data-fade='start'] {
+    -webkit-mask-image: linear-gradient(270deg, black calc(100% - 56px), transparent);
+    mask-image: linear-gradient(270deg, black calc(100% - 56px), transparent);
+  }
+  .pj-tabs[data-fade='both'] {
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 56px, black calc(100% - 56px), transparent);
+    mask-image: linear-gradient(90deg, transparent, black 56px, black calc(100% - 56px), transparent);
+  }
+
+  .pj-tab {
+    position: relative;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 4px;
+    min-height: 56px;
+    padding: 18px 8px 0;
+    border: 0;
+    background: none;
+    color: var(--muted);
+    font-size: var(--step-0);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-transform: lowercase;
+    white-space: nowrap;
+    scroll-snap-align: start;
+    transition: color 0.2s var(--ease-out-quart);
+  }
+  .pj-tab__n {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+    margin-top: -3px;
+  }
+  .pj-tab::after {
+    content: '';
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.45s var(--ease-out-expo);
+  }
+  .pj-tab:hover,
+  .pj-tab[aria-selected='true'] { color: var(--paper); }
+  .pj-tab[aria-selected='true']::after { transform: scaleX(1); }
+  .pj-tab[aria-selected='true'] .pj-tab__n { color: var(--pj-accent-ink); }
+  .pj-tab:focus-visible { outline-offset: -4px; }
+
+  .pj-panels { padding-top: var(--space-xl); }
+  .pj-panel:focus-visible { outline-offset: 8px; }
+  .pj-panel__title { display: none; }
+
+  /* senza JS: niente tab, pannelli in sequenza con il loro titolo */
+  :global(html:not(.js)) .pj-tabs-bar { display: none; }
+  :global(html:not(.js)) .pj-panel[hidden] { display: block; }
+  :global(html:not(.js)) .pj-panel + .pj-panel { margin-top: var(--space-3xl); }
+  :global(html:not(.js)) .pj-panel__title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2xs);
+    margin-bottom: var(--space-md);
+    font-size: var(--step-2);
+    color: var(--paper);
+  }
+
+  /* griglie di tavole */
+  .pj-grid {
+    display: grid;
+    gap: var(--space-xl) var(--space-md);
+    align-items: start;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr));
+  }
+  .pj-grid--portrait { grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+  .pj-grid--single { grid-template-columns: minmax(0, 1fr); }
+
+  /* Magazine: doppia pagina, la coppia resta intera nello schermo */
+  .pj-grid--spread {
+    grid-template-columns: minmax(0, 1fr);
+    width: min(100%, 100svh);
+    margin-inline: auto;
+  }
+  @media (min-width: 700px) {
+    .pj-grid--spread {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 2px;
+    }
+    .pj-grid--spread > .is-solo {
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: calc(50% - 1px);
+    }
+    .pj-grid--spread > .is-right { text-align: right; }
+  }
+
+  /* filati */
+  .pj-yarns {
+    display: grid;
+    gap: var(--space-xl);
+    align-items: start;
+  }
+  .pj-yarns__intro {
+    max-width: 46ch;
+    font-size: var(--step-1);
+    line-height: 1.55;
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+  .pj-yarns__intro :global(em) { color: var(--paper); }
+
+  @media (min-width: 1000px) {
+    .pj-yarns { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); column-gap: var(--space-2xl); }
+    .pj-yarns__intro {
+      position: sticky;
+      top: calc(var(--header-h) + 88px);
+    }
+  }
+
+  .pj-yarns__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--step--1);
+  }
+  .pj-yarns__table th {
+    padding: 0 var(--space-md) var(--space-xs) 0;
+    border-bottom: 1px solid var(--line-strong);
+    text-align: left;
+    font-size: var(--step--2);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .pj-yarns__table td {
+    padding: 14px var(--space-md) 14px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+    color: var(--text-2);
+  }
+  .pj-yarns__table td:first-child {
+    color: var(--paper);
+    font-weight: 700;
+  }
+  .pj-yarns__table td:nth-child(2) {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .pj-yarns__k { display: none; }
+
+  /* telefono: ogni riga diventa un blocco (i ruoli ARIA espliciti tengono la semantica) */
+  @media (max-width: 639px) {
+    .pj-yarns__table thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+    .pj-yarns__table,
+    .pj-yarns__table tbody { display: block; }
+    .pj-yarns__table tr {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-2xs) var(--space-md);
+      padding-block: var(--space-sm);
+      border-bottom: 1px solid var(--line);
+    }
+    .pj-yarns__table td {
+      display: block;
+      padding: 0;
+      border: 0;
+    }
+    .pj-yarns__table td:first-child {
+      grid-column: 1 / -1;
+      font-size: var(--step-0);
+    }
+    .pj-yarns__table td:nth-child(2) { white-space: normal; }
+    .pj-yarns__k {
+      display: block;
+      margin-bottom: 2px;
+    }
+  }
+</style>

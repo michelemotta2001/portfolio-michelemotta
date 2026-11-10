@@ -1,0 +1,301 @@
+---
+/**
+ * Pagina di un editoriale (Numero Magazine, Italian Realism, Gentleman).
+ * Hero centrato → crediti → testo (+ link all'articolo) → galleria da rivista
+ * → lightbox condiviso → navigazione al lavoro successivo.
+ */
+import T from '../T.astro';
+import NextNav from '../NextNav.astro';
+import Lightbox from '../Lightbox.astro';
+import EditorialGallery from './EditorialGallery.astro';
+import { ui, bi, type Bi } from '../../lib/i18n';
+import { projects, pad2, type Project } from '../../lib/data';
+
+interface Props {
+  p: Project;
+}
+
+const { p } = Astro.props;
+
+const n = pad2(p.order);
+const total = pad2(projects.length);
+const counter = bi(`Progetto ${n} di ${total}`, `Project ${n} of ${total}`);
+const kicker = bi(`${n} / ${total} — ${p.kind.it}`, `${n} / ${total} — ${p.kind.en}`);
+
+// Collaboratori citati nei paragrafi → voce "Con" nei crediti
+const collaborators = ['Tommaso Basilio'].filter((name) => p.paragraphs.some((x) => x.it.includes(name)));
+
+const credits: { term: Bi; value: Bi; html?: boolean }[] = [
+  { term: ui.role, value: p.role },
+  {
+    term: p.article ? bi('Pubblicazione', 'Publication') : bi('Contesto', 'Context'),
+    value: p.context,
+    html: true,
+  },
+  ...(collaborators.length ? [{ term: bi('Con', 'With'), value: bi(collaborators.join(', ')) }] : []),
+];
+
+const [lead, ...rest] = p.paragraphs;
+---
+<article class="ed">
+  <header class="ed-hero">
+    <div class="wrap ed-hero__bar ed-rise">
+      <a class="ed-hero__back" href="/#lavori">
+        <span class="ed-hero__arrow" aria-hidden="true">←</span>
+        <T t={ui.index} />
+      </a>
+      <T t={counter} as="p" class="label ed-hero__count" />
+    </div>
+
+    <div class="wrap ed-hero__head">
+      <T t={kicker} as="p" class="label label--accent ed-hero__kicker ed-rise" style="--d: 80ms" />
+      <h1 class="ed-hero__title">
+        <span class="display ed-hero__name ed-rise" style="--d: 160ms">{p.title}</span>
+        {p.subtitle && (
+          <>
+            <span class="sr-only"> — </span>
+            <span class="display ed-hero__sub ed-rise" style="--d: 280ms">{p.subtitle}</span>
+          </>
+        )}
+      </h1>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <dl class="ed-credits reveal">
+      {credits.map((c) => (
+        <div class="ed-credits__item">
+          <T t={c.term} as="dt" class="label" />
+          <T t={c.value} as="dd" html={c.html} />
+        </div>
+      ))}
+    </dl>
+  </div>
+
+  <div class="wrap ed-text">
+    {lead && <T t={lead} as="p" class="ed-text__lead reveal" html />}
+    {rest.map((x, i) => (
+      <T t={x} as="p" class="ed-text__p reveal" html style={`--reveal-delay: ${(i + 1) * 80}ms`} />
+    ))}
+    {p.article && (
+      <a class="ed-pill reveal" href={p.article.href} target="_blank" rel="noopener noreferrer" style="--reveal-delay: 120ms">
+        <span><T t={ui.readArticle} /> — {p.article.label}</span>
+        <span class="sr-only"><T t={bi('(si apre in una nuova scheda)', '(opens in a new tab)')} /></span>
+        <svg class="ed-pill__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M7 17 17 7M8 7h9v9" />
+        </svg>
+      </a>
+    )}
+  </div>
+
+  <EditorialGallery p={p} />
+</article>
+
+<Lightbox />
+<NextNav p={p} />
+
+<style>
+  /* --- hero ------------------------------------------------------------------ */
+
+  .ed-hero {
+    padding-top: var(--space-md);
+    padding-bottom: clamp(48px, 7vw, 96px);
+  }
+
+  .ed-hero__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-md);
+  }
+
+  .ed-hero__back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-height: 44px;
+    font-size: var(--step--2);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--text-2);
+  }
+  .ed-hero__arrow { transition: transform 0.4s var(--ease-out-expo); }
+  .ed-hero__back:hover .ed-hero__arrow { transform: translateX(-4px); }
+
+  .ed-hero__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-top: clamp(48px, 9vw, 128px);
+  }
+
+  .ed-hero__kicker { margin-bottom: var(--space-md); }
+
+  .ed-hero__title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
+    font-weight: 400;
+  }
+
+  .ed-hero__name {
+    /* 19vw: "Gentleman" resta su una riga anche sui telefoni più stretti */
+    font-size: min(var(--step-5), 19vw);
+    line-height: 0.88;
+    color: var(--paper);
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    max-width: 100%;
+  }
+
+  .ed-hero__sub {
+    margin-top: var(--space-sm);
+    font-size: var(--step-3);
+    color: var(--text-2);
+    letter-spacing: 0.02em;
+  }
+
+  /* ingresso: salita morbida, solo transform/opacity */
+  .ed-rise {
+    animation: ed-rise 1.1s var(--ease-out-expo) both;
+    animation-delay: var(--d, 0ms);
+  }
+  @keyframes ed-rise {
+    from { opacity: 0; transform: translateY(36px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ed-rise { animation: none; }
+  }
+
+  /* --- crediti --------------------------------------------------------------- */
+
+  .ed-credits {
+    display: flex;
+    justify-content: center;
+    border-block: 1px solid var(--line);
+    padding-block: var(--space-md);
+  }
+
+  .ed-credits__item {
+    flex: 0 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: var(--space-2xs) clamp(16px, 3vw, 44px);
+    text-align: center;
+  }
+  .ed-credits__item + .ed-credits__item { border-left: 1px solid var(--line); }
+
+  .ed-credits dd {
+    font-size: var(--step-1);
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--paper);
+    text-wrap: balance;
+  }
+
+  /* --- testo ----------------------------------------------------------------- */
+
+  .ed-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    padding-top: clamp(48px, 7vw, 96px);
+    text-align: center;
+  }
+
+  .ed-text__lead {
+    max-width: 58ch;
+    font-size: var(--step-2);
+    line-height: 1.45;
+    color: var(--paper);
+    text-wrap: pretty;
+  }
+
+  .ed-text__p {
+    max-width: 60ch;
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+
+  .ed-text :global(b) {
+    font-weight: 700;
+    color: var(--paper);
+  }
+
+  .ed-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    min-height: 48px;
+    margin-top: var(--space-sm);
+    padding: var(--space-xs) var(--space-md);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    font-size: var(--step--1);
+    font-weight: 500;
+    line-height: 1.3;
+    text-decoration: none;
+    color: var(--paper);
+    transition:
+      border-color 0.3s var(--ease-out-quart),
+      color 0.3s var(--ease-out-quart);
+  }
+  .ed-pill:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .ed-pill__icon {
+    flex: none;
+    transition: transform 0.45s var(--ease-out-expo);
+  }
+  .ed-pill:hover .ed-pill__icon { transform: translate(2px, -2px); }
+
+  /* --- telefono -------------------------------------------------------------- */
+
+  /* schermi molto stretti: il contatore è già nell'etichetta sopra il titolo */
+  @media (max-width: 479px) {
+    .ed-hero__count { display: none; }
+  }
+
+  @media (max-width: 599px) {
+    .ed-hero__head { padding-top: var(--space-2xl); }
+
+    /* crediti come piccola tabella: etichetta a sinistra, valore a destra */
+    .ed-credits {
+      display: grid;
+      padding-block: 0;
+    }
+    .ed-credits__item {
+      display: grid;
+      grid-template-columns: 8.5rem minmax(0, 1fr);
+      align-items: baseline;
+      gap: var(--space-sm);
+      padding: var(--space-sm) 0;
+      text-align: left;
+    }
+    .ed-credits__item + .ed-credits__item {
+      border-left: 0;
+      border-top: 1px solid var(--line);
+    }
+    .ed-credits dd {
+      font-size: var(--step-0);
+      text-wrap: wrap;
+    }
+
+    /* testo lungo: allineato a sinistra si legge meglio su schermi stretti */
+    .ed-text {
+      align-items: flex-start;
+      text-align: left;
+    }
+    .ed-text__lead { font-size: var(--step-1); line-height: 1.55; }
+  }
+</style>

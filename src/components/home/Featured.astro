@@ -1,0 +1,187 @@
+---
+/**
+ * Progetto in evidenza (solo ≥1024px; su schermi piccoli basta l'indice).
+ * Un pannello per lavoro, sovrapposti nella stessa cella: home.ts accende quello del volume
+ * o della riga sotto il puntatore/focus (default il primo) e il cambio è una dissolvenza breve.
+ * I pannelli spenti sono inert: niente focus né lettura dagli screen reader.
+ */
+import { Image } from 'astro:assets';
+import T from '../T.astro';
+import { ui, bi } from '../../lib/i18n';
+import { pad2, workHref, type Project } from '../../lib/data';
+import { img } from '../../lib/images';
+
+interface Props {
+  works: { p: Project; num: string; alt: string; focus: string; ar: number }[];
+}
+
+const { works } = Astro.props;
+const total = pad2(works.length);
+
+/** Copertina 3:4: le foto orizzontali vengono ritagliate, servono più pixel in larghezza. */
+const sizesFor = (ar: number) => {
+  const k = Math.max(1, ar / 0.75);
+  return `(min-width: 1304px) ${Math.round(500 * k)}px, ${Math.round(38 * k)}vw`;
+};
+---
+<section class="feat wrap reveal" aria-labelledby="feat-title" data-feat>
+  <h3 id="feat-title" class="sr-only"><T t={bi('Progetto in evidenza', 'Featured project')} /></h3>
+  <div class="feat__stack">
+    {works.map((w, i) => (
+      <article class:list={['feat__panel', { 'is-active': i === 0 }]} data-feat-panel={i} inert={i !== 0}>
+        <a class="feat__cover" href={workHref(w.p.slug)} tabindex="-1" aria-hidden="true">
+          <Image
+            class="feat__img"
+            src={img(w.p.cover)}
+            alt={w.alt}
+            widths={[400, 600, 800, 1000, 1280]}
+            sizes={sizesFor(w.ar)}
+            format="webp"
+            loading="lazy"
+            decoding="async"
+            style={`object-position: ${w.focus}`}
+          />
+        </a>
+
+        <div class="feat__body">
+          <p class="feat__meta label label--accent">
+            <span>{w.num} / {total}</span>
+            <span aria-hidden="true">—</span>
+            <T t={w.p.kind} />
+          </p>
+          <h4 class="feat__title display">{w.p.title}</h4>
+          {w.p.subtitle && <p class="feat__subtitle bold-lower">{w.p.subtitle}</p>}
+          <T t={w.p.context} as="p" class="feat__context" html />
+          <T t={w.p.excerpt} as="p" class="feat__excerpt" />
+          <p class="feat__role">
+            <span class="feat__role-label"><T t={ui.role} />:</span>
+            <T t={w.p.role} />
+          </p>
+          <a class="feat__link" href={workHref(w.p.slug)}>
+            <T t={ui.openProject} />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 12h15M13 6l6 6-6 6" />
+            </svg>
+          </a>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .feat { display: none; }
+
+  @media (min-width: 1024px) {
+    .feat {
+      display: block;
+      margin-top: var(--section);
+    }
+
+    /* tutti i pannelli nella stessa cella: l'altezza è quella del più lungo, niente salti */
+    .feat__stack { display: grid; }
+
+    .feat__panel {
+      grid-area: 1 / 1;
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      column-gap: clamp(var(--space-xl), 6vw, var(--space-3xl));
+      align-items: end;
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        opacity 0.2s var(--ease-out-quart),
+        visibility 0s linear 0.2s;
+    }
+    .feat__panel.is-active {
+      opacity: 1;
+      visibility: visible;
+      transition:
+        opacity 0.35s var(--ease-out-quart) 0.06s,
+        visibility 0s;
+    }
+
+    .feat__cover {
+      display: block;
+      aspect-ratio: 3 / 4;
+      overflow: hidden;
+      background: var(--ink-2);
+    }
+    .feat__img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s var(--ease-out-expo);
+    }
+    .feat__cover:hover .feat__img { transform: scale(1.025); }
+
+    .feat__body {
+      max-width: 36rem;
+      padding-bottom: var(--space-xs);
+      transform: translateY(12px);
+      transition: transform 0.6s var(--ease-out-expo);
+    }
+    .is-active .feat__body { transform: none; }
+
+    .feat__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 0.6em;
+    }
+    .feat__title {
+      margin-top: var(--space-sm);
+      font-size: clamp(3rem, 1.6rem + 3.4vw, 5.5rem);
+      color: var(--paper);
+      overflow-wrap: anywhere;
+    }
+    .feat__subtitle {
+      margin-top: var(--space-2xs);
+      font-size: var(--step-1);
+      color: var(--text-2);
+    }
+    .feat__context {
+      margin-top: var(--space-md);
+      font-size: var(--step--1);
+      line-height: 1.55;
+      color: var(--muted);
+    }
+    .feat__excerpt {
+      margin-top: var(--space-md);
+      max-width: 46ch;
+      font-size: var(--step-1);
+      line-height: 1.55;
+      color: var(--text);
+    }
+    .feat__role {
+      margin-top: var(--space-md);
+      font-size: var(--step--1);
+      color: var(--text-2);
+    }
+    .feat__role-label { font-weight: 700; color: var(--paper); }
+
+    .feat__link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      min-height: 44px;
+      margin-top: var(--space-lg);
+      font-weight: 700;
+      color: var(--paper);
+      text-decoration: none;
+      border-bottom: 1px solid var(--line-strong);
+      transition:
+        color 0.2s var(--ease-out-quart),
+        border-color 0.2s var(--ease-out-quart);
+    }
+    .feat__link:hover { color: var(--accent); border-bottom-color: var(--accent); }
+    .feat__link svg { transition: transform 0.3s var(--ease-out-expo); }
+    .feat__link:hover svg { transform: translateX(4px); }
+  }
+
+  @media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+    .feat__body,
+    .is-active .feat__body { transform: none; }
+    .feat__cover:hover .feat__img,
+    .feat__link:hover svg { transform: none; }
+  }
+</style>

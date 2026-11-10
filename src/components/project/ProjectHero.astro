@@ -1,0 +1,224 @@
+---
+/**
+ * Apertura del progetto: ritorno all'indice, posizione nella sequenza dei lavori,
+ * titolo in Anton che sale all'ingresso e scheda crediti (da p.context + ruolo).
+ */
+import T from '../T.astro';
+import { ui, bi, type Bi } from '../../lib/i18n';
+import { projects, pad2, type Project } from '../../lib/data';
+
+interface Props {
+  p: Project;
+}
+
+const { p } = Astro.props;
+const num = pad2(p.order);
+const total = pad2(projects.length);
+
+// p.context: righe separate da <br>. "Etichetta: valore" diventa una voce della scheda,
+// le righe senza etichetta (corso, ateneo) vanno sotto "Contesto".
+type Parsed = { lines: string[]; pairs: [string, string][] };
+const parse = (html: string): Parsed => {
+  const lines: string[] = [];
+  const pairs: [string, string][] = [];
+  for (const raw of html.split(/<br\s*\/?>/i)) {
+    const row = raw.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').trim();
+    if (!row) continue;
+    const i = row.indexOf(':');
+    if (i > 0 && i < 48) pairs.push([row.slice(0, i).trim(), row.slice(i + 1).trim()]);
+    else lines.push(row);
+  }
+  return { lines, pairs };
+};
+
+const it = parse(p.context.it);
+const en = parse(p.context.en || p.context.it);
+// IT ed EN devono avere la stessa struttura per essere accoppiati riga per riga
+const paired = it.lines.length === en.lines.length && it.pairs.length === en.pairs.length;
+
+type Row = { term: Bi; values: Bi[] };
+const rows: Row[] = [];
+if (paired) {
+  if (it.lines.length) {
+    rows.push({ term: bi('Contesto', 'Context'), values: it.lines.map((l, k) => bi(l, en.lines[k])) });
+  }
+  it.pairs.forEach(([term, value], k) => {
+    rows.push({ term: bi(term, en.pairs[k][0]), values: [bi(value, en.pairs[k][1])] });
+  });
+}
+rows.push({ term: ui.role, values: [p.role] });
+
+const words = p.title.trim().split(/\s+/);
+---
+<header class="pj-hero">
+  <div class="wrap">
+    <div class="pj-hero__bar">
+      <a class="pj-hero__back" href="/#lavori">
+        <svg class="pj-hero__arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 12H5M11 6l-6 6 6 6"></path>
+        </svg>
+        <T t={ui.index} />
+      </a>
+      <p class="pj-hero__pos">
+        <T t={bi(`Progetto ${num} di ${total}`, `Project ${num} of ${total}`)} />
+      </p>
+    </div>
+
+    <p class="pj-hero__kicker">{num} / {total} — <T t={p.kind} /></p>
+
+    <h1 class="pj-hero__title display">
+      {words.map((w, i) => (
+        <>
+          <span class="pj-hero__word"><span style={`--i: ${i}`}>{w}</span></span>
+          {i < words.length - 1 && ' '}
+        </>
+      ))}
+    </h1>
+
+    <div class="pj-hero__credits">
+      <h2 class="pj-hero__credits-title label"><T t={bi('Crediti', 'Credits')} /></h2>
+      <dl class="pj-credits">
+        {!paired && (
+          <div class="pj-credits__row">
+            <dt class="label"><T t={bi('Contesto', 'Context')} /></dt>
+            <dd><T t={p.context} html /></dd>
+          </div>
+        )}
+        {rows.map((r) => (
+          <div class="pj-credits__row">
+            <dt class="label"><T t={r.term} /></dt>
+            <dd>{r.values.map((v) => <T t={v} class="pj-credits__line" />)}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </div>
+</header>
+
+<style>
+  .pj-hero {
+    padding-block: var(--space-md) clamp(56px, 8vw, 112px);
+  }
+
+  .pj-hero__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    padding-bottom: var(--space-3xs);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .pj-hero__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    font-size: var(--step--1);
+    color: var(--text-2);
+    text-decoration: none;
+  }
+  .pj-hero__arrow { transition: transform 0.4s var(--ease-out-expo); }
+  .pj-hero__back:hover .pj-hero__arrow { transform: translateX(-4px); }
+
+  .pj-hero__pos {
+    font-size: var(--step--1);
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  /* l'accento schiarito verso l'avorio resta leggibile anche a 12px (vedi --pj-accent-ink) */
+  .pj-hero__kicker {
+    margin-top: clamp(48px, 9vw, 120px);
+    font-size: var(--step--2);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--pj-accent-ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pj-hero__title {
+    margin-top: var(--space-sm);
+    font-size: min(var(--step-5), 22vw);
+    line-height: 0.86;
+    color: var(--paper);
+    text-wrap: balance;
+  }
+
+  /* ingresso: ogni parola sale dalla propria "fessura" */
+  .pj-hero__word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding-block: 0.1em;
+    margin-block: -0.1em;
+  }
+  .pj-hero__word > span {
+    display: inline-block;
+    animation: pj-rise 1.2s var(--ease-out-expo) both;
+    animation-delay: calc(120ms + var(--i, 0) * 90ms);
+  }
+
+  .pj-hero__kicker,
+  .pj-hero__credits {
+    animation: pj-fade 0.9s var(--ease-out-quart) both;
+  }
+  .pj-hero__credits { animation-delay: 420ms; }
+
+  @keyframes pj-rise {
+    from { transform: translate3d(0, 108%, 0); }
+    to { transform: none; }
+  }
+  @keyframes pj-fade {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* scheda crediti */
+  .pj-hero__credits {
+    display: grid;
+    gap: var(--space-sm) var(--space-lg);
+    margin-top: clamp(40px, 6vw, 88px);
+  }
+
+  .pj-credits { border-top: 1px solid var(--line); }
+
+  .pj-credits__row {
+    display: grid;
+    grid-template-columns: minmax(0, 11rem) minmax(0, 1fr);
+    gap: var(--space-3xs) var(--space-md);
+    padding-block: 14px;
+    border-bottom: 1px solid var(--line);
+  }
+  .pj-credits dt { padding-top: 0.35em; }
+  .pj-credits dd {
+    margin: 0;
+    color: var(--text);
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+  .pj-credits__line { display: block; }
+
+  @media (min-width: 900px) {
+    .pj-hero__credits { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+    .pj-hero__credits-title {
+      grid-column: 1 / span 4;
+      padding-top: 15px;
+    }
+    .pj-credits { grid-column: 5 / -1; }
+  }
+
+  @media (max-width: 599px) {
+    .pj-credits__row { grid-template-columns: minmax(0, 1fr); }
+    .pj-credits dt { padding-top: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pj-hero__word > span,
+    .pj-hero__kicker,
+    .pj-hero__credits { animation: none; }
+    .pj-hero__arrow { transition: none; }
+  }
+</style>

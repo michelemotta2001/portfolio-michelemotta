@@ -1,0 +1,194 @@
+---
+/**
+ * Lightbox condiviso: si include una volta per pagina (<Lightbox />).
+ * <dialog> nativo (focus intrappolato, Esc chiude), clic sullo sfondo chiude,
+ * frecce e swipe per scorrere dentro lo stesso gruppo. Logica in src/scripts/lightbox.ts.
+ *
+ * Contratto per gli elementi apribili, ovunque nella pagina:
+ *   <button type="button" data-lb-item data-lb-group="NOME_GRUPPO" data-lb-src={URL_GRANDE}
+ *           data-lb-alt="testo alt" data-lb-caption="Tavola 03 / 14"> …miniatura… </button>
+ *   URL_GRANDE = (await getImage({ src: img(path), width: 1800, format: 'webp' })).src
+ *   Facoltativo: data-lb-caption-en="Plate 03 / 14" (didascalia quando la pagina è in inglese).
+ */
+import T from './T.astro';
+import { ui, bi } from '../lib/i18n';
+
+const prev = bi('Immagine precedente', 'Previous image');
+const next = bi('Immagine successiva', 'Next image');
+---
+<dialog class="lb" data-lightbox aria-labelledby="lb-caption">
+  <div class="lb-stage" data-lb-stage>
+    <img class="lb-img" data-lb-img alt="" decoding="async" />
+  </div>
+
+  <div class="lb-bar">
+    <button type="button" class="lb-btn lb-prev" data-lb-prev>
+      <span class="sr-only"><T t={prev} /></span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M15 5l-7 7 7 7"></path>
+      </svg>
+    </button>
+    <p class="lb-cap" data-lb-cap-wrap>
+      <span id="lb-caption" data-lb-cap></span>
+      <span class="lb-count" data-lb-counter></span>
+    </p>
+    <button type="button" class="lb-btn lb-next" data-lb-next>
+      <span class="sr-only"><T t={next} /></span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M9 5l7 7-7 7"></path>
+      </svg>
+    </button>
+  </div>
+
+  <button type="button" class="lb-btn lb-close" data-lb-close autofocus>
+    <span class="sr-only"><T t={ui.close} /></span>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+      <path d="M6 6l12 12M18 6L6 18"></path>
+    </svg>
+  </button>
+
+  <span class="lb-load" aria-hidden="true"></span>
+</dialog>
+
+<script>
+  import '../scripts/lightbox.ts';
+</script>
+
+<style>
+  /* il dialog occupa tutto lo schermo: lo "sfondo" è il dialog stesso */
+  .lb {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-lightbox);
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    background: color-mix(in oklch, var(--ink) 97%, transparent);
+    color: var(--text);
+  }
+  .lb[open] {
+    display: grid;
+    grid-template-rows: 64px minmax(0, 1fr) auto;
+  }
+  .lb::backdrop { background: transparent; }
+
+  .lb-stage {
+    position: relative;
+    grid-row: 2;
+    min-height: 0;
+    touch-action: pan-y pinch-zoom;
+  }
+  .lb-img {
+    position: absolute;
+    inset: 0 var(--space-sm);
+    width: calc(100% - 2 * var(--space-sm));
+    height: 100%;
+    max-width: none;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .lb-img:not([src]) { visibility: hidden; }
+
+  .lb-bar {
+    grid-row: 3;
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) 48px;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-sm) calc(var(--space-sm) + env(safe-area-inset-bottom));
+  }
+
+  .lb-cap {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px var(--space-sm);
+    min-height: 1.5em;
+    text-align: center;
+    font-size: var(--step--1);
+    color: var(--text-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .lb-count { color: var(--muted); }
+  .lb-count:empty { display: none; }
+
+  .lb-btn {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+    transition: border-color 0.2s var(--ease-out-quart), transform 0.35s var(--ease-out-expo);
+  }
+  .lb-btn:hover { border-color: var(--paper); }
+  .lb-btn:active { transform: scale(0.94); }
+
+  .lb-close {
+    position: absolute;
+    top: var(--space-xs);
+    right: var(--space-xs);
+  }
+
+  /* un solo elemento nel gruppo: niente frecce */
+  .lb.is-single .lb-prev,
+  .lb.is-single .lb-next { visibility: hidden; }
+
+  /* caricamento dell'immagine grande: una linea sottile che pulsa */
+  .lb-load {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform-origin: left center;
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  .lb[aria-busy='true'] .lb-load {
+    animation: lb-load 1.1s var(--ease-out-quart) 0.2s infinite;
+  }
+  @keyframes lb-load {
+    0% { transform: scaleX(0); opacity: 1; }
+    80% { transform: scaleX(1); opacity: 1; }
+    100% { transform: scaleX(1); opacity: 0; }
+  }
+
+  /* da tablet in su: frecce ai lati dell'immagine */
+  @media (min-width: 760px) {
+    .lb[open] { grid-template-rows: 72px minmax(0, 1fr) auto; }
+    .lb-img {
+      inset: 0 88px;
+      width: calc(100% - 176px);
+    }
+    .lb-bar { grid-template-columns: minmax(0, 1fr); }
+    .lb-prev,
+    .lb-next {
+      position: absolute;
+      top: 50%;
+      margin-top: -24px;
+    }
+    .lb-prev { left: var(--space-md); }
+    .lb-next { right: var(--space-md); }
+    .lb-close {
+      top: var(--space-md);
+      right: var(--space-md);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lb-btn { transition: none; }
+    .lb[aria-busy='true'] .lb-load { animation: none; opacity: 1; transform: scaleX(1); }
+  }
+</style>

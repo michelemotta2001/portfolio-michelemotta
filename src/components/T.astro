@@ -1,0 +1,24 @@
+---
+/**
+ * Testo bilingue. Renderizza l'italiano; src/scripts/site.ts lo scambia con l'inglese.
+ * Uso: <T t={{ it: 'Lavori', en: 'Works' }} />  ·  <T t={p.context} as="p" html />
+ */
+import type { Bi } from '../lib/i18n';
+
+interface Props {
+  t: Bi | string;
+  as?: string;
+  html?: boolean;
+  class?: string;
+  [attr: string]: unknown;
+}
+
+const { t, as = 'span', html = false, class: className, ...rest } = Astro.props;
+const Tag = as as any;
+const it = typeof t === 'string' ? t : t.it;
+const en = typeof t === 'string' ? t : t.en || t.it;
+const i18n = it !== en ? { 'data-it': it, 'data-en': en, ...(html ? { 'data-html': '' } : {}) } : {};
+---
+{html
+  ? <Tag class={className} {...i18n} {...rest} set:html={it} />
+  : <Tag class={className} {...i18n} {...rest}>{it}</Tag>}

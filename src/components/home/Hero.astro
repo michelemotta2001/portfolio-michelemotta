@@ -1,0 +1,110 @@
+---
+/**
+ * Apertura della homepage: "MOTTA" in Anton enorme.
+ * Le lettere salgono una alla volta (effetto del sito originale di Michele):
+ * home.ts aggiunge .is-in quando il font è pronto, così non si anima il carattere di riserva.
+ */
+import T from '../T.astro';
+import { bi } from '../../lib/i18n';
+import { site, pad2 } from '../../lib/data';
+
+interface Props {
+  count: number;
+}
+
+const { count } = Astro.props;
+const letters = [...'MOTTA'];
+---
+<section class="hero" data-hero aria-labelledby="hero-title">
+  <div class="wrap">
+    <div class="hero__meta">
+      <T
+        t={bi(`Portfolio — ${pad2(count)} lavori`, `Portfolio — ${pad2(count)} works`)}
+        as="p"
+        class="label hero__label"
+      />
+      <T t={site.tagline} as="p" class="hero__tagline bold-lower" />
+    </div>
+
+    <h1 id="hero-title" class="hero__title">
+      <span class="sr-only">Michele Motta — fashion &amp; knitwear designer</span>
+      <span class="hero__word display" aria-hidden="true">
+        {letters.map((l, i) => <span class="hero__letter" style={`--i: ${i}`}>{l}</span>)}
+      </span>
+    </h1>
+  </div>
+</section>
+
+<style>
+  .hero { padding-top: clamp(var(--space-md), 4vw, var(--space-xl)); }
+
+  /* riga sopra il nome: come la testata di una rivista */
+  .hero__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--space-xs) var(--space-lg);
+    padding-bottom: var(--space-xs);
+    border-bottom: 1px solid var(--line);
+  }
+  .hero__label { flex: none; }
+  .hero__tagline {
+    max-width: 36ch;
+    font-size: var(--step--1);
+    line-height: 1.35;
+    color: var(--text-2);
+    text-align: right;
+  }
+
+  .hero__title {
+    margin-top: clamp(var(--space-sm), 2.4vw, var(--space-lg));
+    font-weight: 400;
+  }
+  .hero__word {
+    display: flex;
+    justify-content: center;
+    /* mai più largo dello schermo, anche sui telefoni da 320px */
+    font-size: min(var(--step-hero), calc((100vw - 2 * var(--gutter)) / 2.75));
+    line-height: 0.86;
+    letter-spacing: 0.01em;
+    color: var(--paper);
+    user-select: none;
+  }
+  .hero__letter { display: block; }
+
+  /* --- entrata delle lettere (solo con JS; senza resta tutto visibile) --- */
+  :global(.js) .hero__letter {
+    opacity: 0;
+    transform: translateY(0.22em);
+    /* rete di sicurezza: se lo script non parte, le lettere compaiono comunque */
+    animation: hero-letter-safety 0.01s linear 2.4s forwards;
+  }
+  .hero:global(.is-in) .hero__letter {
+    opacity: 1;
+    transform: none;
+    animation: none;
+    transition:
+      opacity 0.6s var(--ease-out-quart),
+      transform 0.9s var(--ease-out-expo);
+    transition-delay: calc(60ms + var(--i) * 90ms);
+  }
+  @keyframes hero-letter-safety {
+    to { opacity: 1; transform: none; }
+  }
+
+  /* telefono: etichetta e frase una sopra l'altra, allineate a sinistra */
+  @media (max-width: 599px) {
+    .hero__meta { flex-direction: column; align-items: flex-start; }
+    .hero__tagline { text-align: left; max-width: 44ch; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .hero__letter,
+    .hero:global(.is-in) .hero__letter {
+      opacity: 1;
+      transform: none;
+      animation: none;
+      transition: none;
+    }
+  }
+</style>

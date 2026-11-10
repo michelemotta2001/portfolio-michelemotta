@@ -1,0 +1,181 @@
+---
+/** Pagina 404: Vercel la serve per ogni URL inesistente. Rimanda alla home e ai 7 lavori. */
+import Base from '../layouts/Base.astro';
+import T from '../components/T.astro';
+import { ui, bi } from '../lib/i18n';
+import { projects, workHref, pad2 } from '../lib/data';
+
+const works = [...projects].sort((a, b) => a.order - b.order);
+---
+<Base
+  title="Pagina non trovata · Michele Motta"
+  description="La pagina che cerchi non esiste. Torna alla homepage o apri uno dei lavori di Michele Motta, fashion & knitwear designer."
+>
+  <section class="wrap nf" aria-labelledby="nf-title">
+    <h1 id="nf-title" class="nf__title">
+      <span class="display nf__code">404</span>
+      <T t={bi('questa pagina non esiste', 'this page doesn’t exist')} class="bold-lower nf__phrase" />
+    </h1>
+    <T
+      as="p"
+      class="nf__text"
+      t={bi(
+        'Il link potrebbe essere vecchio o contenere un errore. Torna alla homepage oppure apri uno dei lavori qui sotto.',
+        'The link may be outdated or mistyped. Go back to the homepage or open one of the works below.',
+      )}
+    />
+    <a class="nf__home" href="/">
+      <span aria-hidden="true">←</span>
+      <T t={ui.home} />
+    </a>
+  </section>
+
+  <nav class="wrap nf-works" aria-labelledby="nf-works-title">
+    <h2 id="nf-works-title" class="label"><T t={ui.allWorks} /></h2>
+    <ol class="nf-works__list">
+      {works.map((p) => (
+        <li>
+          <a class="nf-works__link" href={workHref(p.slug)}>
+            <span class="nf-works__num" aria-hidden="true">{pad2(p.order)}</span>
+            <span class="display nf-works__name">
+              {p.title}
+              {p.subtitle && <span class="nf-works__sub"> — {p.subtitle}</span>}
+            </span>
+            <T t={p.kind} class="nf-works__kind" />
+            <svg class="nf-works__arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+</Base>
+
+<style>
+  .nf {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+    padding-block: clamp(48px, 9vw, 128px) var(--section);
+  }
+
+  .nf__title {
+    display: flex;
+    flex-direction: column;
+    font-weight: 400;
+  }
+
+  .nf__code {
+    font-size: var(--step-hero);
+    line-height: 0.82;
+    color: var(--paper);
+    animation: nf-rise 1.1s var(--ease-out-expo) both;
+  }
+
+  .nf__phrase {
+    margin-top: var(--space-md);
+    font-family: var(--font-body);
+    font-size: var(--step-3);
+    line-height: 1.05;
+    color: var(--paper);
+    animation: nf-rise 1.1s var(--ease-out-expo) 120ms both;
+  }
+
+  @keyframes nf-rise {
+    from { opacity: 0; transform: translateY(32px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nf__code,
+    .nf__phrase { animation: none; }
+  }
+
+  .nf__text {
+    max-width: 52ch;
+    color: var(--text-2);
+  }
+
+  .nf__home {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    min-height: 48px;
+    padding: var(--space-xs) var(--space-md);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    font-size: var(--step--1);
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--paper);
+    transition:
+      border-color 0.3s var(--ease-out-quart),
+      color 0.3s var(--ease-out-quart);
+  }
+  .nf__home:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* --- elenco dei lavori ----------------------------------------------------- */
+
+  .nf-works { padding-bottom: var(--section); }
+
+  .nf-works__list {
+    margin-top: var(--space-md);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .nf-works__link {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: var(--space-md);
+    min-height: 64px;
+    padding-block: var(--space-md);
+    border-top: 1px solid var(--line);
+    text-decoration: none;
+    color: var(--paper);
+  }
+
+  .nf-works__num {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--muted);
+  }
+
+  .nf-works__name {
+    font-size: var(--step-3);
+    transition: transform 0.5s var(--ease-out-expo), color 0.25s var(--ease-out-quart);
+  }
+  .nf-works__sub { color: var(--text-2); }
+
+  .nf-works__kind {
+    font-size: var(--step--1);
+    color: var(--muted);
+  }
+
+  .nf-works__arrow {
+    color: var(--muted);
+    transition: transform 0.45s var(--ease-out-expo), color 0.25s var(--ease-out-quart);
+  }
+
+  .nf-works__link:hover .nf-works__name { color: var(--accent); transform: translateX(6px); }
+  .nf-works__link:hover .nf-works__arrow { color: var(--accent); transform: translateX(4px); }
+
+  @media (max-width: 599px) {
+    .nf-works__link {
+      grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+      grid-template-areas:
+        'num name arrow'
+        'num kind arrow';
+      column-gap: var(--space-sm);
+      row-gap: var(--space-3xs);
+      padding-block: var(--space-sm);
+    }
+    .nf-works__num { grid-area: num; align-self: start; padding-top: 0.2em; }
+    .nf-works__name { grid-area: name; }
+    .nf-works__kind { grid-area: kind; }
+    .nf-works__arrow { grid-area: arrow; }
+  }
+</style>
