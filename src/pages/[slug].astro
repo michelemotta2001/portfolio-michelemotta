@@ -1,0 +1,18 @@
+---
+/** Una pagina per ogni lavoro: /titina, /mondo-fuori, … (stessi URL del vecchio sito, senza .html) */
+import Base from '../layouts/Base.astro';
+import ProjectPage from '../components/project/ProjectPage.astro';
+import EditorialPage from '../components/editorial/EditorialPage.astro';
+import { projects, type Project } from '../lib/data';
+import { img } from '../lib/images';
+
+export function getStaticPaths() {
+  return projects.map((p) => ({ params: { slug: p.slug }, props: { p } }));
+}
+
+const { p } = Astro.props as { p: Project };
+const title = `${p.title}${p.subtitle ? ` — ${p.subtitle}` : ''} · Michele Motta`;
+---
+<Base title={title} description={p.excerpt.it} accent={p.accent} image={img(p.cover)}>
+  {p.type === 'project' ? <ProjectPage p={p} /> : <EditorialPage p={p} />}
+</Base>

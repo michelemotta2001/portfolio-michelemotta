@@ -1,0 +1,372 @@
+---
+/**
+ * Mensola 3D dei lavori: un volume per lavoro, ognuno è un link alla sua pagina.
+ * - Desktop (≥1024px): palco 1240×660 in unità proporzionali (cqw), volumi a scalare
+ *   dall'alto a sinistra; i successivi stanno davanti ai precedenti, così titolo e numero
+ *   restano sempre leggibili sulla parte scoperta. Hover/focus: il volume si alza.
+ * - Tablet e telefono: fila orizzontale scorrevole (scroll-snap) di volumi dritti.
+ * La didascalia sotto mostra il volume attivo; home.ts la aggiorna insieme al progetto in evidenza.
+ */
+import { Image } from 'astro:assets';
+import T from '../T.astro';
+import { ui } from '../../lib/i18n';
+import { workHref, type Project } from '../../lib/data';
+import { img } from '../../lib/images';
+
+interface Props {
+  works: { p: Project; num: string; alt: string; focus: string; ar: number }[];
+}
+
+const { works } = Astro.props;
+
+/** Altezze dei volumi nella bozza approvata (unità del palco 1240×660). */
+const heights: Record<string, number> = {
+  titina: 340,
+  'mondo-fuori': 360,
+  luddovio: 330,
+  'gettin-busy': 350,
+  'numero-magazine': 330,
+  'italian-realism': 340,
+  'gentleman-oliviero-toscani': 360,
+};
+
+const vols = works.map((w, i) => {
+  const h = heights[w.p.slug] ?? 345;
+  // le copertine orizzontali vengono ritagliate in verticale: servono più pixel in larghezza
+  const k = Math.max(1, w.ar / 0.78);
+  const sizes = [
+    `(min-width: 1304px) ${Math.round(250 * k)}px`,
+    `(min-width: 1024px) ${Math.round(20 * k)}vw`,
+    `(min-width: 768px) ${Math.round(27 * k)}vw`,
+    `(min-width: 560px) ${Math.round(40 * k)}vw`,
+    `${Math.round(62 * k)}vw`,
+  ].join(', ');
+  return {
+    ...w,
+    sizes,
+    style: [
+      `--i: ${i}`,
+      `--z: ${i + 1}`,
+      `--h: ${h}`,
+      `--x: ${20 + i * 158}`,
+      `--y: ${40 + i * 40 + (360 - h)}`,
+    ].join('; '),
+  };
+});
+
+const first = works[0];
+---
+<div class="shelf" data-shelf>
+  <div class="shelf__stage" data-shelf-stage>
+    {vols.map((v, i) => (
+      <a
+        class="vol"
+        href={workHref(v.p.slug)}
+        aria-label={`Apri ${v.p.title}`}
+        data-aria-it={`Apri ${v.p.title}`}
+        data-aria-en={`Open ${v.p.title}`}
+        data-work={i}
+        data-tags={v.p.tags.join('|')}
+        data-num={v.num}
+        data-title={v.p.title}
+        data-kind-it={v.p.kind.it}
+        data-kind-en={v.p.kind.en}
+        style={v.style}
+      >
+        <span class="vol__body">
+          <span class="vol__top" aria-hidden="true"></span>
+          <span class="vol__side" aria-hidden="true"></span>
+          <span class="vol__face">
+            <span class="vol__cover">
+              <Image
+                class="vol__img"
+                src={img(v.p.cover)}
+                alt={v.alt}
+                widths={[240, 360, 480, 640, 960]}
+                sizes={v.sizes}
+                format="webp"
+                loading={i < 3 ? 'eager' : 'lazy'}
+                decoding="async"
+                style={`object-position: ${v.focus}`}
+              />
+            </span>
+            <span class="vol__bar">
+              <span class="vol__num">{v.num}</span>
+              <span class="vol__title">{v.p.title}</span>
+            </span>
+          </span>
+        </span>
+      </a>
+    ))}
+  </div>
+
+  <div class="wrap shelf__caption">
+    <p class="shelf__now">
+      <span class="shelf__num" data-cap-num>{first.num}</span>
+      <span class="shelf__dash" aria-hidden="true">—</span>
+      <span class="shelf__title" data-cap-title>{first.p.title}</span>
+      <span class="shelf__dot" aria-hidden="true">·</span>
+      <T t={first.p.kind} class="shelf__kind" data-cap-kind />
+    </p>
+    <T t={ui.shelfHint} as="p" class="shelf__hint label" />
+  </div>
+</div>
+
+<style>
+  /* ---------------------------------------------------------------------------
+     Variabili del volume (telefono/tablet); il desktop le ricalcola in unità del palco
+     --------------------------------------------------------------------------- */
+  .shelf {
+    --vol-top: var(--text);                                          /* faccia superiore, avorio */
+    --vol-side: color-mix(in oklch, var(--paper) 56%, var(--ink));   /* faccia laterale, in ombra */
+    --face: 10px;
+    --lift: 10px;
+    --bar: 40px;
+    --bar-fs: 16px;
+    padding-top: var(--space-md);
+  }
+
+  /* --- telefono e tablet: fila orizzontale scorrevole ---------------------- */
+  .shelf__stage {
+    --edge: max(var(--gutter), (100% - var(--wrap)) / 2);
+    position: relative; /* riferimento per offsetLeft dei volumi (home.ts) */
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-md);
+    overflow-x: auto;
+    overflow-y: hidden; /* durante l'entrata i volumi salgono "dal bordo" senza creare scroll verticale */
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--edge);
+    /* sopra: spazio per faccia superiore e sollevamento, che lo scroller taglierebbe */
+    padding: calc(var(--face) + var(--lift) + 10px) var(--edge) var(--space-xs);
+    scrollbar-width: none;
+  }
+  .shelf__stage::-webkit-scrollbar { display: none; }
+
+  /* larghezza: ~62vw telefono, ~27vw iPad (il volume successivo si intravede sempre);
+     su schermi bassi (telefono in orizzontale) il volume intero deve stare nello schermo */
+  .vol {
+    --vol-w: clamp(132px, calc((100svh - var(--header-h) - 120px) * 0.69), 62vw);
+    position: relative;
+    z-index: var(--z);
+    display: block;
+    flex: none;
+    width: var(--vol-w);
+    aspect-ratio: 250 / var(--h);
+    scroll-snap-align: start;
+    color: var(--ink);
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  @media (min-width: 560px) {
+    .vol { --vol-w: clamp(132px, calc((100svh - var(--header-h) - 120px) * 0.69), 40vw); }
+  }
+  @media (min-width: 768px) {
+    .vol { --vol-w: clamp(132px, calc((100svh - var(--header-h) - 120px) * 0.69), 27vw); }
+  }
+
+  .vol__body {
+    position: absolute;
+    inset: 0;
+    transition:
+      transform 0.45s var(--ease-out-expo),
+      opacity 0.3s var(--ease-out-quart);
+  }
+
+  /* faccia superiore: parte dall'angolo in basso a sinistra e si inclina a destra */
+  .vol__top {
+    position: absolute;
+    left: 0;
+    bottom: 100%;
+    width: 100%;
+    height: var(--face);
+    transform-origin: 0 100%;
+    transform: skewX(-45deg);
+    /* sottili righe orizzontali: il taglio delle pagine */
+    background: repeating-linear-gradient(
+        to bottom,
+        transparent 0 2px,
+        color-mix(in oklch, var(--ink) 10%, transparent) 2px 3px
+      )
+      var(--vol-top);
+  }
+
+  /* faccia laterale: sale verso destra fino a incontrare quella superiore */
+  .vol__side {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: var(--face);
+    height: 100%;
+    transform-origin: 0 0;
+    transform: skewY(-45deg);
+    background: repeating-linear-gradient(
+        to right,
+        transparent 0 2px,
+        color-mix(in oklch, var(--ink) 14%, transparent) 2px 3px
+      )
+      var(--vol-side);
+  }
+
+  .vol__face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--ink-3);
+  }
+  .vol__cover {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .vol__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* barra in basso: numero + titolo, come l'etichetta sul dorso */
+  .vol__bar {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 0.55em;
+    height: var(--bar);
+    padding-inline: 0.7em;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: var(--bar-fs);
+    line-height: 1;
+    overflow: hidden;
+  }
+  .vol__num {
+    flex: none;
+    font-size: max(10px, 0.7em);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .vol__title {
+    min-width: 0;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* --- interazione --------------------------------------------------------- */
+  @media (hover: hover) {
+    .vol:hover .vol__body { transform: translateY(calc(-1 * var(--lift))); }
+  }
+  .vol:focus-visible { outline: none; z-index: 20; }
+  .vol:focus-visible .vol__body { transform: translateY(calc(-1 * var(--lift))); }
+  .vol:focus-visible .vol__face { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* filtro attivo: i volumi senza il tag si attenuano */
+  .vol.is-dim .vol__body { opacity: 0.18; }
+  .vol.is-dim:hover .vol__body,
+  .vol.is-dim:focus-visible .vol__body { opacity: 0.6; }
+
+  /* --- entrata: i volumi salgono in sequenza quando la mensola entra nello schermo --- */
+  :global(.js) .shelf:not(.is-in) .vol {
+    opacity: 0;
+    transform: translateY(56px);
+    /* rete di sicurezza: se lo script non parte, i volumi compaiono comunque */
+    animation: vol-safety 0.01s linear 3s forwards;
+  }
+  .shelf.is-in .vol {
+    transition:
+      opacity 0.7s var(--ease-out-quart),
+      transform 1s var(--ease-out-expo);
+    transition-delay: calc(var(--i) * 90ms);
+  }
+  @keyframes vol-safety {
+    to { opacity: 1; transform: none; }
+  }
+
+  /* --- desktop: il palco 1240×660 con i volumi a scalare --------------------- */
+  @media (min-width: 1024px) {
+    /* il palco ha già 40 unità libere in alto (servono al sollevamento): parte subito sotto i filtri */
+    .shelf { padding-top: 0; }
+
+    .shelf__stage {
+      display: block;
+      position: relative;
+      width: min(var(--wrap), 100% - 2 * var(--gutter));
+      margin-inline: auto;
+      aspect-ratio: 1240 / 660;
+      padding: 0;
+      overflow: visible;
+      scroll-snap-type: none;
+      container-type: inline-size;
+    }
+
+    .vol {
+      --u: calc(100cqw / 1240); /* 1 unità della bozza */
+      --face: calc(18 * var(--u));
+      --lift: calc(34 * var(--u));
+      --bar: calc(40 * var(--u));
+      --bar-fs: max(12px, calc(15 * var(--u)));
+      position: absolute;
+      left: calc(var(--x) * var(--u));
+      top: calc(var(--y) * var(--u));
+      width: calc(250 * var(--u));
+      height: calc(var(--h) * var(--u));
+      aspect-ratio: auto;
+    }
+  }
+
+  /* --- didascalia ---------------------------------------------------------- */
+  .shelf__caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-2xs) var(--space-lg);
+    margin-top: var(--space-md);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--line);
+  }
+  .shelf__now {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.45em;
+    font-size: var(--step-0);
+    line-height: 1.4;
+  }
+  .shelf__num {
+    color: var(--accent);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .shelf__dash,
+  .shelf__dot { color: var(--muted); }
+  .shelf__title { font-weight: 700; color: var(--paper); }
+  .shelf__now :global(.shelf__kind) { color: var(--text-2); }
+  .shelf__hint { text-align: right; }
+
+  @media (max-width: 767px) {
+    .shelf__caption { flex-direction: column; }
+    .shelf__hint { text-align: left; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .shelf:not(.is-in) .vol,
+    .shelf.is-in .vol {
+      opacity: 1;
+      transform: none;
+      animation: none;
+      transition: none;
+    }
+    .vol:hover .vol__body,
+    .vol:focus-visible .vol__body { transform: none; }
+  }
+</style>

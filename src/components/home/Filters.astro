@@ -1,0 +1,127 @@
+---
+/**
+ * Filtri per categoria (site.tags). Veri <button aria-pressed>, con il numero di lavori per tag.
+ * home.ts attenua volumi e righe dell'indice che non hanno il tag e aggiorna la riga di stato.
+ * Senza JS i filtri non servirebbero a nulla: restano nascosti, i lavori sono tutti visibili.
+ */
+import T from '../T.astro';
+import { ui, bi } from '../../lib/i18n';
+import { site, type Project } from '../../lib/data';
+
+interface Props {
+  works: { p: Project }[];
+}
+
+const { works } = Astro.props;
+const tagsEn = site.tagsEn as Record<string, string>;
+
+const filters = site.tags
+  .map((tag) => {
+    const count = works.filter((w) => w.p.tags.includes(tag)).length;
+    return { tag, label: bi(tag, tagsEn[tag] ?? tag), count };
+  })
+  .filter((f) => f.count > 0);
+
+const total = works.length;
+---
+<div class="filters wrap" data-filters>
+  <T t={ui.filterBy} id="filters-label" class="sr-only" />
+  <div class="filters__row" role="group" aria-labelledby="filters-label">
+    {filters.map((f) => (
+      <button
+        type="button"
+        class="filter"
+        aria-pressed="false"
+        data-filter={f.tag}
+        data-label-it={f.label.it}
+        data-label-en={f.label.en}
+        data-count={f.count}
+      >
+        <T t={f.label} class="filter__name" />
+        <span class="filter__count" aria-hidden="true">{f.count}</span>
+        <span class="sr-only">
+          <T t={bi(`, ${f.count} ${f.count === 1 ? 'lavoro' : 'lavori'}`, `, ${f.count} ${f.count === 1 ? 'work' : 'works'}`)} />
+        </span>
+      </button>
+    ))}
+  </div>
+  <T
+    t={bi(`${ui.allWorks.it}: ${total}`, `${ui.allWorks.en}: ${total}`)}
+    as="p"
+    class="filters__status"
+    aria-live="polite"
+    data-filter-status
+  />
+</div>
+
+<style>
+  .filters { padding-top: clamp(var(--space-md), 3vw, var(--space-xl)); }
+  :global(html:not(.js)) .filters { display: none; }
+
+  .filters__row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2xs);
+  }
+
+  .filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 var(--space-sm);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text);
+    font-size: var(--step--1);
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    transition:
+      background-color 0.25s var(--ease-out-quart),
+      border-color 0.25s var(--ease-out-quart),
+      color 0.25s var(--ease-out-quart);
+  }
+  .filter__count {
+    font-size: var(--step--2);
+    font-weight: 700;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    transform: translateY(-0.4em); /* numero in esponente */
+    transition: color 0.25s var(--ease-out-quart);
+  }
+  .filter:hover { border-color: var(--paper); }
+  .filter[aria-pressed='true'] {
+    background: var(--paper);
+    border-color: var(--paper);
+    color: var(--ink);
+  }
+  .filter[aria-pressed='true'] .filter__count { color: var(--ink-3); }
+
+  .filters__status {
+    min-height: 1.65em; /* niente salti quando il testo cambia */
+    margin-top: var(--space-xs);
+    font-size: var(--step--1);
+    color: var(--muted);
+    text-align: center;
+  }
+
+  /* telefono: una sola riga scorrevole a tutta larghezza invece di tre righe di bottoni */
+  @media (max-width: 767px) {
+    .filters__row {
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      margin: -6px calc(-1 * var(--gutter));
+      padding: 6px var(--gutter); /* spazio per l'anello di focus, che lo scroller taglierebbe */
+      scroll-padding-inline: var(--gutter);
+      scrollbar-width: none;
+    }
+    .filters__row::-webkit-scrollbar { display: none; }
+    .filter { flex: none; }
+    .filters__status { text-align: left; min-height: 3.3em; } /* due righe: la mensola non salta */
+  }
+</style>

@@ -1,0 +1,161 @@
+---
+/**
+ * Intro del progetto — richiesta del cliente: "il testo fermo a destra e le foto a sinistra
+ * che, scorrendo, scendono". Da 900px: foto a sinistra nel flusso, paragrafi a destra sticky.
+ * Sotto 900px: una colonna, prima il testo poi le foto. Con una sola foto: affiancati semplici.
+ * src/scripts/project.ts controlla che il testo stia nello schermo (se no si ferma col fondo).
+ */
+import T from '../T.astro';
+import Plate from './Plate.astro';
+import { bi } from '../../lib/i18n';
+import { pad2, type Project } from '../../lib/data';
+
+interface Props {
+  p: Project;
+}
+
+const { p } = Astro.props;
+const photos = p.intro ?? [];
+const single = photos.length <= 1;
+const n = photos.length;
+
+// Testi lunghi (Titina: 5 paragrafi) usano una scala più compatta per stare in uno schermo
+const chars = p.paragraphs.reduce((sum, x) => sum + x.it.replace(/<[^>]+>/g, '').length, 0);
+const dense = chars > 1500;
+
+const sizes = single
+  ? '(min-width: 1320px) 672px, (min-width: 900px) 55vw, calc(100vw - 32px)'
+  : '(min-width: 1320px) 524px, (min-width: 900px) 41vw, (min-width: 600px) 46vw, calc(100vw - 32px)';
+---
+<section
+  class="pj-intro"
+  aria-labelledby="pj-intro-title"
+  data-intro
+  data-mode={single ? 'single' : 'sticky'}
+  data-density={dense ? 'dense' : 'normal'}
+>
+  <div class="wrap">
+    <h2 id="pj-intro-title" class="pj-intro__label label"><T t={bi('Il progetto', 'The project')} /></h2>
+
+    <div class="pj-intro__grid">
+      <div class="pj-intro__text" data-intro-text>
+        {p.paragraphs.map((t, i) => (
+          <T t={t} as="p" html class={i === 0 ? 'pj-intro__lead' : 'pj-intro__p'} />
+        ))}
+      </div>
+
+      {n > 0 && (
+        <div class="pj-intro__media" data-count={n}>
+          {photos.map((path, i) => (
+            <Plate
+              class="pj-intro__photo reveal"
+              path={path}
+              group="intro"
+              alt={n > 1 ? `${p.title}: foto di progetto ${i + 1} di ${n}` : `${p.title}: foto di progetto`}
+              lbCaption={bi(`${p.title} — Foto ${pad2(i + 1)} / ${pad2(n)}`, `${p.title} — Photo ${pad2(i + 1)} / ${pad2(n)}`)}
+              sizes={sizes}
+              widths={[400, 600, 800, 1100, 1400]}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+  .pj-intro { padding-bottom: var(--section); }
+
+  .pj-intro__label {
+    padding-top: var(--space-sm);
+    margin-bottom: var(--space-lg);
+    border-top: 1px solid var(--line);
+  }
+
+  .pj-intro__grid {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .pj-intro__text { max-width: 40rem; }
+  .pj-intro__text > :global(* + *) { margin-top: 1em; }
+  .pj-intro__text :global(b),
+  .pj-intro__text :global(strong) { color: var(--paper); font-weight: 700; }
+
+  .pj-intro__lead {
+    font-size: var(--step-2);
+    line-height: 1.3;
+    letter-spacing: -0.012em;
+    color: var(--paper);
+    text-wrap: pretty;
+  }
+  .pj-intro__p {
+    color: var(--text-2);
+    line-height: 1.65;
+    text-wrap: pretty;
+  }
+
+  .pj-intro__media {
+    display: grid;
+    gap: var(--space-sm);
+    align-items: start;
+  }
+
+  /* iPad verticale: foto due a due sotto il testo */
+  @media (min-width: 600px) and (max-width: 899px) {
+    .pj-intro__media:not([data-count='1']) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (min-width: 900px) {
+    .pj-intro__grid {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+      column-gap: clamp(40px, 5.5vw, 88px);
+      align-items: start;
+    }
+    .pj-intro__media {
+      grid-column: 1;
+      grid-row: 1;
+      gap: var(--space-md);
+    }
+    .pj-intro__text {
+      grid-column: 2;
+      grid-row: 1;
+      max-width: none;
+    }
+
+    /* il testo resta fermo mentre le foto scorrono; --pj-stick lo imposta project.ts se non entra */
+    [data-mode='sticky'] .pj-intro__text {
+      position: sticky;
+      top: var(--pj-stick, calc(var(--header-h) + 24px));
+    }
+
+    /* una sola foto (Gettin' Busy): affiancati, niente sticky */
+    [data-mode='single'] .pj-intro__grid {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: center;
+    }
+
+    /* scala calibrata per stare in calc(100svh - header - 48px) */
+    .pj-intro__lead { font-size: clamp(1.25rem, 0.85rem + 0.75vw, 1.625rem); }
+    [data-mode='sticky'] .pj-intro__p { font-size: 1rem; line-height: 1.6; }
+    [data-density='dense'] .pj-intro__lead { font-size: 1.3125rem; line-height: 1.32; }
+    [data-density='dense'] .pj-intro__p { font-size: 0.9375rem; line-height: 1.55; }
+    [data-density='dense'] .pj-intro__text > :global(* + *) { margin-top: 0.8em; }
+  }
+
+  /* schermi bassi (laptop 1440×900 con la barra del browser): testo più piccolo, mai scrollabile */
+  @media (min-width: 900px) and (max-height: 820px) {
+    [data-mode='sticky'] .pj-intro__lead { font-size: 1.25rem; }
+    [data-mode='sticky'] .pj-intro__p { font-size: 0.9375rem; line-height: 1.55; }
+    [data-density='dense'] .pj-intro__lead { font-size: 1.125rem; line-height: 1.3; }
+    [data-density='dense'] .pj-intro__p { font-size: 0.875rem; line-height: 1.5; }
+    [data-density='dense'] .pj-intro__text > :global(* + *) { margin-top: 0.7em; }
+  }
+
+  @media (min-width: 900px) and (max-height: 700px) {
+    [data-mode='sticky'] .pj-intro__lead { font-size: 1.125rem; }
+    [data-mode='sticky'] .pj-intro__p { font-size: 0.875rem; line-height: 1.5; }
+    [data-density='dense'] .pj-intro__lead { font-size: 1rem; }
+    [data-density='dense'] .pj-intro__p { font-size: 0.8125rem; line-height: 1.48; }
+  }
+</style>

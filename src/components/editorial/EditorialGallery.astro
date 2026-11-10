@@ -1,0 +1,332 @@
+---
+/**
+ * Galleria da rivista degli editoriali.
+ * - foto verticali consecutive: due colonne, la seconda sfalsata verso il basso
+ * - foto orizzontali (doppie pagine): riga intera, mai più alte dello schermo
+ * - una verticale isolata (es. copertina): centrata
+ * Ogni foto è un bottone che apre il lightbox condiviso (gruppo "gallery").
+ */
+import { Image, getImage } from 'astro:assets';
+import T from '../T.astro';
+import { ui, bi, type Bi } from '../../lib/i18n';
+import { pad2, type Project } from '../../lib/data';
+import { img } from '../../lib/images';
+
+interface Props {
+  p: Project;
+}
+
+const { p } = Astro.props;
+
+/** Testi alternativi (in italiano) e didascalie: projects.json non li contiene. */
+const meta: Record<string, { alt: string; caption?: Bi }> = {
+  // Numero Magazine — simulazione di rivista: copertina, doppie pagine, quarta
+  'numero-magazine/gallery-01.jpg': {
+    alt: 'Copertina di Numéro 001 «Nuova Era»: una ragazza con occhiali scuri e abito bianco e un ragazzo con cappello rosa, schiena contro schiena su fondo chiaro',
+    caption: bi('Copertina', 'Cover'),
+  },
+  'numero-magazine/gallery-02.jpg': {
+    alt: 'Doppia pagina: a sinistra l’indice della rivista, a destra l’apertura di «Passi Falsi» con una modella in cappotto lungo e occhiali scuri, in bianco e nero',
+    caption: bi('Indice · Passi Falsi', 'Contents · Passi Falsi'),
+  },
+  'numero-magazine/gallery-03.jpg': {
+    alt: 'Doppia pagina «La Nuova Intesa»: testo sullo streetwear nel lusso accanto al ritratto in bianco e nero di un ragazzo con maglione a trecce e collo a V',
+    caption: bi('La Nuova Intesa · p. 005', 'La Nuova Intesa · p. 005'),
+  },
+  'numero-magazine/gallery-04.jpg': {
+    alt: 'Doppia pagina in bianco e nero: un ragazzo in blazer appoggiato a un flash da studio con softbox',
+    caption: bi('Passi Falsi', 'Passi Falsi'),
+  },
+  'numero-magazine/gallery-05.jpg': {
+    alt: 'Doppia pagina in bianco e nero: due ritratti di un ragazzo in blazer e camicia bianca, uno frontale e uno a capo chino sul telefono',
+    caption: bi('Passi Falsi · p. 009', 'Passi Falsi · p. 009'),
+  },
+  'numero-magazine/gallery-06.jpg': {
+    alt: 'Doppia pagina: la scritta Rick Owens ripetuta in corsivo accanto a uno still life in bianco e nero con smartphone, scarpe e un braccio vestito di nero',
+    caption: bi('Rick Owens', 'Rick Owens'),
+  },
+  'numero-magazine/gallery-07.jpg': {
+    alt: 'Doppia pagina «Streetwear Mob»: due foto mosse di un ragazzo che cammina davanti a muri con graffiti, con testi sul legame tra moda e rap',
+    caption: bi('Streetwear Mob · p. 013', 'Streetwear Mob · p. 013'),
+  },
+  'numero-magazine/gallery-08.jpg': {
+    alt: 'Doppia pagina a colori: un ragazzo seduto su una panchina con lo skateboard tra gli alberi e una ragazza con cappellino bianco davanti a un muro dipinto',
+    caption: bi('Streetwear Mob', 'Streetwear Mob'),
+  },
+  'numero-magazine/gallery-09.jpg': {
+    alt: 'Doppia pagina a colori: un ragazzo in t-shirt davanti a un grande graffito e una ragazza con cappellino in un sottopassaggio dipinto',
+    caption: bi('Streetwear Mob', 'Streetwear Mob'),
+  },
+  'numero-magazine/gallery-10.jpg': {
+    alt: 'Doppia pagina: sneakers su un nastro segnaletico bianco e rosso e, a destra, i ritratti con i ruoli dei quattro componenti del team',
+    caption: bi('Ritratti e bio', 'Portraits and bios'),
+  },
+  'numero-magazine/gallery-11.jpg': {
+    alt: 'Quarta di copertina: una sneaker bianca e un jeans nero strappato su fondo chiaro, con il logo Supreme in alto',
+    caption: bi('Quarta di copertina', 'Back cover'),
+  },
+
+  // Italian Realism — The Mode / Snob Non per Tutti
+  'italian-realism/gallery-01.jpg': {
+    alt: 'In bianco e nero, una donna con caschetto scuro e abito a fiori seduta davanti a un camino, lo sguardo rivolto verso l’alto',
+  },
+  'italian-realism/gallery-02.jpg': {
+    alt: 'Doppia pagina in bianco e nero: una coppia ripresa dall’alto in un salone luminoso e la donna in camicia a zig-zag con l’uomo in giacca bianca alle spalle',
+  },
+  'italian-realism/gallery-03.jpg': {
+    alt: 'Doppia pagina in bianco e nero: un uomo con occhiali e camicia scura che fuma accanto a una palma e una donna in abito a pois appoggiata alla porta di un ascensore',
+  },
+  'italian-realism/gallery-04.jpg': {
+    alt: 'Doppia pagina in bianco e nero: la donna in abito a fiori seduta sul pavimento davanti al camino e, a destra, distesa su una poltrona con l’uomo in completo alle spalle',
+  },
+  'italian-realism/gallery-05.jpg': {
+    alt: 'Doppia pagina in bianco e nero: la donna in una vasca da bagno con occhiali da sole e un calice di vino e, a destra, abbracciata dall’uomo in giacca bianca',
+  },
+
+  // Gentleman — scatti di Oliviero Toscani
+  'gentleman/gallery-01.png': {
+    alt: 'Due uomini con cappello da cowboy e poncho a righe e a motivi, con una sella da equitazione, davanti a un fondale grigio dipinto',
+  },
+  'gentleman/gallery-02.png': {
+    alt: 'Un uomo con cappello nero e giacca a doppiopetto blu tiene per la cavezza un cavallo baio, davanti a un fondale grigio',
+  },
+  'gentleman/gallery-03.png': {
+    alt: 'Un uomo con cappello di paglia, gilet verde e pantaloni bianchi in una scuderia, accanto a finimenti appesi alla parete',
+  },
+  'gentleman/gallery-04.jpg': {
+    alt: 'Scatto di backstage: un uomo dai capelli ricci, piegato in avanti, si infila gli stivali su un pavimento in cotto a spina di pesce',
+  },
+};
+
+/** Didascalia di default per progetto ("01 — Michele Motta per Gentleman"). */
+const defaultCaption: Record<string, Bi> = {
+  'italian-realism': bi('Michele Motta per The Mode', 'Michele Motta for The Mode'),
+  'gentleman-oliviero-toscani': bi('Michele Motta per Gentleman', 'Michele Motta for Gentleman'),
+};
+
+const paths = p.gallery ?? [];
+const count = pad2(paths.length);
+
+/** Larghezze del srcset senza superare l'originale (niente ingrandimenti). */
+const widthsFor = (w: number, list: number[]) => [...list.filter((x) => x < w), w];
+
+const items = await Promise.all(
+  paths.map(async (path, i) => {
+    const src = img(path);
+    const wide = src.width > src.height * 1.2;
+    // versione grande per il lightbox
+    const large = await getImage({ src, width: Math.min(1800, src.width), format: 'webp' });
+    const m = meta[path];
+    return {
+      src,
+      wide,
+      num: pad2(i + 1),
+      large: large.src,
+      ratio: (src.width / src.height).toFixed(4),
+      alt: m?.alt ?? `${p.title}, immagine ${i + 1} di ${paths.length}`,
+      caption: m?.caption ?? defaultCaption[p.slug] ?? bi(p.title),
+    };
+  }),
+);
+
+type Item = (typeof items)[number];
+type Row = { kind: 'wide' | 'pair' | 'solo'; items: Item[] };
+
+// Righe: ogni orizzontale fa riga a sé; le verticali consecutive formano un blocco a due colonne
+const rows: Row[] = [];
+for (const it of items) {
+  const last = rows.at(-1);
+  if (!it.wide && last && last.kind !== 'wide') {
+    last.items.push(it);
+    last.kind = 'pair';
+  } else {
+    rows.push({ kind: it.wide ? 'wide' : 'solo', items: [it] });
+  }
+}
+
+const sizes = {
+  wide: '(min-width: 1304px) 1240px, 94vw',
+  pair: '(min-width: 1180px) 540px, (min-width: 600px) 46vw, 94vw',
+  solo: '(min-width: 600px) 544px, 94vw',
+};
+const widths = {
+  wide: [640, 960, 1280, 1600, 2000],
+  pair: [400, 600, 800, 1080],
+  solo: [400, 600, 800, 1080],
+};
+---
+<section class="eg" aria-labelledby="eg-title">
+  <h2 id="eg-title" class="sr-only"><T t={bi('Galleria', 'Gallery')} /></h2>
+
+  <div class="wrap eg__rows">
+    {rows.map((row) => (
+      <div class:list={['eg__row', `eg__row--${row.kind}`]}>
+        {row.items.map((it, j) => {
+          const low = row.kind === 'pair' && j % 2 === 1;
+          return (
+            <figure
+              class:list={['eg__item', 'reveal', { 'eg__item--low': low }]}
+              style={`--ar: ${it.ratio}; --reveal-delay: ${low ? 140 : 0}ms`}
+            >
+              <button
+                type="button"
+                class="eg__btn"
+                data-lb-item
+                data-lb-group="gallery"
+                data-lb-src={it.large}
+                data-lb-alt={it.alt}
+                data-lb-caption={`${it.num} / ${count}`}
+              >
+                <span class="sr-only"><T t={ui.enlarge} />:</span>
+                <Image
+                  class="eg__img"
+                  src={it.src}
+                  alt={it.alt}
+                  widths={widthsFor(it.src.width, widths[row.kind])}
+                  sizes={sizes[row.kind]}
+                  format="webp"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="eg__zoom" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 4h6v6M10 20H4v-6M20 4l-6.5 6.5M4 20l6.5-6.5" />
+                  </svg>
+                </span>
+              </button>
+              <figcaption class="eg__cap">
+                <span class="eg__num">{it.num}</span>
+                <span class="eg__dash" aria-hidden="true">—</span>
+                <T t={it.caption} />
+              </figcaption>
+            </figure>
+          );
+        })}
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .eg {
+    --eg-gap: clamp(48px, 8vw, 112px);
+    /* altezza utile dello schermo: le foto intere restano visibili senza scorrere */
+    --eg-fit: calc(100vh - var(--header-h) - 7.5rem);
+    padding-block: var(--section);
+  }
+  @supports (height: 100svh) {
+    .eg { --eg-fit: calc(100svh - var(--header-h) - 7.5rem); }
+  }
+
+  .eg__rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--eg-gap);
+  }
+
+  /* --- righe ---------------------------------------------------------------- */
+
+  /* doppie pagine e orizzontali: tutta la larghezza, mai più alte dello schermo */
+  .eg__row--wide .eg__item {
+    width: min(100%, max(20rem, var(--eg-fit) * var(--ar)));
+    margin-inline: auto;
+  }
+
+  /* verticale isolata (copertina, quarta): centrata */
+  .eg__row--solo .eg__item {
+    width: min(100%, max(16rem, min(34rem, var(--eg-fit) * var(--ar))));
+    margin-inline: auto;
+  }
+
+  /* verticali consecutive: due colonne, la seconda scende di --stagger */
+  .eg__row--pair {
+    --stagger: clamp(0px, 11vw, 180px);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    column-gap: clamp(16px, 4vw, 64px);
+    row-gap: clamp(40px, 6vw, 96px);
+    width: min(100%, 1100px);
+    margin-inline: auto;
+    padding-bottom: var(--stagger);
+  }
+  /* "translate" non interferisce con il transform della comparsa .reveal */
+  .eg__item--low { translate: 0 var(--stagger); }
+
+  /* --- singola immagine ----------------------------------------------------- */
+
+  .eg__item { min-width: 0; }
+
+  .eg__btn {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: var(--ink-2);
+    aspect-ratio: var(--ar);
+    overflow: hidden;
+    cursor: zoom-in;
+  }
+  .eg__btn:focus-visible { outline-offset: 4px; }
+
+  .eg__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.9s var(--ease-out-expo);
+  }
+
+  .eg__zoom {
+    position: absolute;
+    right: var(--space-sm);
+    bottom: var(--space-sm);
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: color-mix(in oklch, var(--ink) 82%, transparent);
+    color: var(--paper);
+    opacity: 0;
+    transform: scale(0.85);
+    transition:
+      opacity 0.3s var(--ease-out-quart),
+      transform 0.45s var(--ease-out-expo);
+  }
+
+  @media (hover: hover) {
+    .eg__btn:hover .eg__img { transform: scale(1.025); }
+    .eg__btn:hover .eg__zoom { opacity: 1; transform: none; }
+  }
+  .eg__btn:focus-visible .eg__zoom { opacity: 1; transform: none; }
+
+  .eg__cap {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2xs);
+    margin-top: var(--space-sm);
+    font-size: var(--step--1);
+    line-height: 1.4;
+    color: var(--muted);
+  }
+  .eg__num {
+    font-family: var(--font-display);
+    font-size: var(--step-0);
+    letter-spacing: 0.04em;
+    color: var(--text-2);
+  }
+  .eg__dash { color: var(--line-strong); }
+
+  /* --- telefono: una colonna, nessuno sfalsamento --------------------------- */
+  @media (max-width: 599px) {
+    .eg { --eg-gap: var(--space-2xl); }
+    .eg__row--pair {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: var(--eg-gap);
+      padding-bottom: 0;
+    }
+    .eg__item--low { translate: none; }
+    .eg__cap { margin-top: var(--space-xs); }
+  }
+</style>

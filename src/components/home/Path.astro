@@ -1,0 +1,85 @@
+---
+/**
+ * Percorso: formazione ed esperienze (site.path).
+ * Desktop: tre colonne · iPad: righe a due colonne (titolo | testo) · telefono: una colonna.
+ */
+import T from '../T.astro';
+import { ui, bi } from '../../lib/i18n';
+import { site, pad2 } from '../../lib/data';
+
+const steps = site.path.map((item) => ({
+  title: bi(item.title, (item as { titleEn?: string }).titleEn ?? item.title),
+  text: item.text,
+}));
+---
+<section id="percorso" class="path" aria-labelledby="path-title">
+  <div class="wrap">
+    <h2 id="path-title" class="label"><T t={ui.path} /></h2>
+    <ol class="path__list">
+      {steps.map((s, i) => (
+        <li class="path__item reveal" style={`--reveal-delay: ${i * 100}ms`}>
+          <span class="path__num" aria-hidden="true">{pad2(i + 1)}</span>
+          <T t={s.title} as="h3" class="path__title display" />
+          <T t={s.text} as="p" class="path__text" />
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .path {
+    padding-block: var(--section);
+    border-top: 1px solid var(--line);
+  }
+
+  .path__list {
+    display: grid;
+    gap: var(--space-xl);
+    margin-top: var(--space-xl);
+  }
+
+  .path__item {
+    display: grid;
+    align-content: start;
+    gap: var(--space-xs);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--line-strong);
+  }
+  .path__num {
+    font-size: var(--step--2);
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .path__title {
+    font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
+    color: var(--paper);
+  }
+  .path__text {
+    max-width: 42ch;
+    color: var(--text-2);
+  }
+
+  /* iPad verticale: una riga per voce, titolo a sinistra e testo a destra */
+  @media (min-width: 600px) and (max-width: 1023px) {
+    .path__list { gap: 0; }
+    .path__item {
+      grid-template-columns: 2.5rem minmax(0, 5fr) minmax(0, 6fr);
+      column-gap: var(--space-md);
+      align-items: baseline;
+      padding-block: var(--space-lg);
+    }
+    .path__item:last-child { border-bottom: 1px solid var(--line-strong); }
+  }
+
+  /* desktop: tre colonne */
+  @media (min-width: 1024px) {
+    .path__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: clamp(var(--space-lg), 4vw, var(--space-2xl));
+      margin-top: var(--space-2xl);
+    }
+    .path__title { margin-top: var(--space-xs); }
+  }
+</style>

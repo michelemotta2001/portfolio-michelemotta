@@ -1,0 +1,57 @@
+---
+/** Navigazione in fondo a ogni lavoro: homepage a sinistra, lavoro successivo a destra. */
+import T from './T.astro';
+import { ui } from '../lib/i18n';
+import { bySlug, workHref, type Project } from '../lib/data';
+
+const { p } = Astro.props as { p: Project };
+const next = bySlug(p.next);
+const wraps = next.order < p.order;
+---
+<nav class="next-nav" aria-label="Navigazione tra i lavori">
+  <div class="wrap next-nav__grid">
+    <a class="next-nav__link" href="/#lavori">
+      <span class="label">← <T t={ui.home} /></span>
+      <T t={ui.index} class="display next-nav__title" />
+    </a>
+    <a class="next-nav__link next-nav__link--next" href={workHref(next.slug)}>
+      <span class="label"><T t={wraps ? ui.restart : ui.next} /> →</span>
+      <span class="display next-nav__title">{next.title}</span>
+    </a>
+  </div>
+</nav>
+
+<style>
+  .next-nav { border-top: 1px solid var(--line); }
+  .next-nav__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+  }
+  .next-nav__link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-2xl) var(--space-md) var(--space-2xl) 0;
+    text-decoration: none;
+    color: var(--paper);
+    transition: background 0.3s var(--ease-out-quart);
+  }
+  .next-nav__link--next {
+    align-items: flex-end;
+    text-align: right;
+    padding: var(--space-2xl) 0 var(--space-2xl) var(--space-md);
+    border-left: 1px solid var(--line);
+  }
+  .next-nav__title {
+    font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4.5rem);
+    transition: transform 0.5s var(--ease-out-expo), color 0.25s var(--ease-out-quart);
+  }
+  .next-nav__link:hover .next-nav__title { color: var(--accent); }
+  .next-nav__link:hover .next-nav__title { transform: translateX(-6px); }
+  .next-nav__link--next:hover .next-nav__title { transform: translateX(6px); }
+  @media (max-width: 760px) {
+    .next-nav__link,
+    .next-nav__link--next { padding: var(--space-xl) 0; align-items: flex-start; text-align: left; }
+    .next-nav__link--next { border-left: 0; border-top: 1px solid var(--line); }
+  }
+</style>

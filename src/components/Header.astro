@@ -1,0 +1,163 @@
+---
+import T from './T.astro';
+import { ui, collabMail, mailtoHref } from '../lib/i18n';
+import { site } from '../lib/data';
+
+// "Collaboriamo": mail a Michele già pronta, in italiano o inglese secondo la lingua scelta
+const collabIt = mailtoHref(site.contacts.email, collabMail.subject.it, collabMail.body.it);
+const collabEn = mailtoHref(site.contacts.email, collabMail.subject.en, collabMail.body.en);
+
+/** In homepage le ancore sono locali; nelle altre pagine puntano alla home. */
+const { home = false } = Astro.props as { home?: boolean };
+const base = home ? '' : '/';
+---
+<a class="skip-link" href="#main"><T t={ui.skip} /></a>
+<header class="site-header" data-header>
+  <div class="wrap site-header__in">
+    <a class="brand" href="/" aria-label="Michele Motta — homepage">
+      <span class="brand__name">Michele Motta</span>
+      <span class="brand__role">fashion &amp; knitwear designer</span>
+    </a>
+
+    <button class="menu-btn" type="button" aria-expanded="false" aria-controls="site-nav" data-menu-btn>
+      <span class="sr-only"><T t={ui.menu} /></span>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path class="menu-btn__top" d="M4 8h16" /><path class="menu-btn__bottom" d="M4 16h16" />
+      </svg>
+    </button>
+
+    <nav id="site-nav" class="site-nav" aria-label="Principale" data-menu>
+      <a href={`${base}#lavori`}><T t={ui.works} /></a>
+      <a href={`${base}#about`}><T t={ui.about} /></a>
+      <a href={`${base}#percorso`}><T t={ui.path} /></a>
+      <a href="#contatti"><T t={ui.contact} /></a>
+      <div class="lang" role="group" aria-label="Lingua / Language">
+        <button type="button" data-lang="it" aria-pressed="true">IT</button>
+        <span aria-hidden="true">/</span>
+        <button type="button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <a class="cta" href={collabIt} data-href-it={collabIt} data-href-en={collabEn}><T t={ui.collab} /></a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    background: color-mix(in oklch, var(--ink) 88%, transparent);
+    backdrop-filter: saturate(1.2) blur(10px);
+    -webkit-backdrop-filter: saturate(1.2) blur(10px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s var(--ease-out-quart), transform 0.4s var(--ease-out-quart);
+  }
+  :global(.is-scrolled) .site-header { border-bottom-color: var(--line); }
+
+  .site-header__in {
+    min-height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+  }
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+    text-decoration: none;
+    color: var(--paper);
+  }
+  .brand__name {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 1.1875rem;
+    letter-spacing: 0.03em;
+  }
+  .brand__role { font-size: 0.6875rem; font-weight: 700; color: var(--muted); }
+  .brand:hover .brand__name { color: var(--accent); }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    font-size: var(--step--1);
+  }
+  .site-nav > a { text-decoration: none; padding-block: var(--space-xs); }
+  .site-nav > a:not(.cta):hover { color: var(--accent); }
+
+  .lang { display: flex; align-items: center; gap: 2px; color: var(--muted); }
+  .lang button {
+    background: none;
+    border: 0;
+    padding: var(--space-xs) 4px;
+    color: var(--muted);
+    font-size: var(--step--1);
+    min-width: 32px;
+  }
+  .lang button[aria-pressed='true'] { color: var(--paper); font-weight: 700; }
+  .lang button:hover { color: var(--accent); }
+
+  .cta {
+    background: var(--paper);
+    color: var(--ink);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: 999px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.25s var(--ease-out-quart), color 0.25s var(--ease-out-quart);
+  }
+  .cta:hover { background: var(--accent); color: var(--ink); }
+
+  .menu-btn {
+    display: none;
+    background: none;
+    border: 0;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    color: var(--paper);
+    margin-right: -10px;
+  }
+  .menu-btn path { transition: transform 0.35s var(--ease-out-quart); transform-origin: center; }
+  .menu-btn[aria-expanded='true'] .menu-btn__top { transform: translateY(4px) rotate(45deg); }
+  .menu-btn[aria-expanded='true'] .menu-btn__bottom { transform: translateY(-4px) rotate(-45deg); }
+
+  /* Telefono e iPad verticale: menu a tutto schermo con le voci in Anton */
+  @media (max-width: 860px) {
+    .menu-btn { display: grid; position: relative; z-index: calc(var(--z-menu) + 1); }
+    .site-nav {
+      position: fixed;
+      inset: 0;
+      z-index: var(--z-menu);
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      gap: var(--space-xs);
+      padding: calc(var(--header-h) + var(--space-lg)) var(--gutter) var(--space-2xl);
+      background: var(--ink);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-12px);
+      transition: opacity 0.35s var(--ease-out-quart), transform 0.45s var(--ease-out-expo), visibility 0s linear 0.35s;
+    }
+    .site-nav.is-open {
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      transition: opacity 0.35s var(--ease-out-quart), transform 0.45s var(--ease-out-expo), visibility 0s;
+    }
+    .site-nav > a:not(.cta) {
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      font-size: clamp(2.75rem, 12vw, 4.5rem);
+      line-height: 1.05;
+      padding: 0;
+      color: var(--paper);
+    }
+    .lang { margin-top: var(--space-lg); font-size: var(--step-1); }
+    .lang button { font-size: var(--step-1); min-height: 44px; }
+    .cta { margin-top: var(--space-sm); padding: var(--space-sm) var(--space-md); font-size: var(--step-1); }
+  }
+</style>
