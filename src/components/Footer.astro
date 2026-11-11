@@ -1,13 +1,15 @@
 ---
 import T from './T.astro';
-import { ui } from '../lib/i18n';
+import { ui, bi } from '../lib/i18n';
 import { site } from '../lib/data';
 const c = site.contacts;
+// su telefono l'indirizzo va a capo prima della chiocciola, non a metà parola
+const [mailUser, mailDomain] = c.email.split('@');
 ---
 <footer id="contatti" class="site-footer">
   <div class="wrap site-footer__in">
     <T t={ui.contactsTitle} class="label label--accent" />
-    <a class="site-footer__mail" href={`mailto:${c.email}`}>{c.email}</a>
+    <a class="site-footer__mail" href={`mailto:${c.email}`}>{mailUser}<wbr />@{mailDomain}</a>
     <ul class="site-footer__links">
       <li><a href={c.phoneHref}>{c.phone}</a></li>
       <li><a href={c.linkedin} target="_blank" rel="noopener">LinkedIn <span aria-hidden="true">↗</span></a></li>
@@ -16,6 +18,11 @@ const c = site.contacts;
     <div class="site-footer__base">
       <span>© {new Date().getFullYear()} Michele Motta</span>
       <span>Fashion &amp; Knitwear Designer — Milano</span>
+      <!-- credito: link fuori dal testo tradotto, così resta uguale in IT ed EN -->
+      <span class="site-footer__credit">
+        <T t={bi('Sito realizzato da', 'Website by')} />
+        <a href="https://www.girosrl.com" target="_blank" rel="noopener">GI.R.O. SRL</a>
+      </span>
     </div>
   </div>
 </footer>
@@ -23,7 +30,8 @@ const c = site.contacts;
 <style>
   .site-footer { border-top: 1px solid var(--line); }
   .site-footer__in {
-    padding-block: var(--section) var(--space-xl);
+    /* in fondo: sopra la barra home dell'iPhone */
+    padding-block: var(--section) calc(var(--space-xl) + env(safe-area-inset-bottom, 0px));
     display: flex;
     flex-direction: column;
     gap: var(--space-xl);
@@ -34,7 +42,7 @@ const c = site.contacts;
     line-height: 1;
     letter-spacing: -0.02em;
     text-decoration: none;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word; /* solo ultima risorsa: il punto di a capo previsto è il <wbr> prima della @ */
     color: var(--paper);
   }
   .site-footer__links {
@@ -55,10 +63,30 @@ const c = site.contacts;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    gap: var(--space-xs);
-    padding-top: var(--space-lg);
+    align-items: center;
+    gap: 0 var(--space-md);
+    padding-top: var(--space-md);
     border-top: 1px solid var(--line);
     font-size: var(--step--2);
+    line-height: 1.5;
     color: var(--muted);
+  }
+  .site-footer__credit a {
+    /* discreto ma toccabile: 44px di altezza utile senza allargare la riga visivamente */
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--text-2);
+    text-decoration: underline;
+    text-decoration-color: var(--line-strong);
+  }
+  .site-footer__credit a:hover { color: var(--accent); text-decoration-color: currentColor; }
+
+  /* telefono: l'indirizzo va su due righe (prima/dopo la @), quindi può essere più grande;
+     una voce per riga nella base, allineate a sinistra */
+  @media (max-width: 599px) {
+    .site-footer__mail { font-size: min(calc((100vw - 2 * var(--gutter)) / 10), 2.75rem); }
+    .site-footer__base { flex-direction: column; align-items: flex-start; gap: var(--space-3xs); }
+    .site-footer__credit { margin-top: -10px; } /* compensa l'area di tocco del link */
   }
 </style>

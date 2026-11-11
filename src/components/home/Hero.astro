@@ -28,8 +28,12 @@ const letters = [...'MOTTA'];
 
     <h1 id="hero-title" class="hero__title">
       <span class="sr-only">Michele Motta — fashion &amp; knitwear designer</span>
-      <span class="hero__word display" aria-hidden="true">
-        {letters.map((l, i) => <span class="hero__letter" style={`--i: ${i}`}>{l}</span>)}
+      <span class="hero__word display" aria-hidden="true" data-hero-word>
+        {letters.map((l, i) => (
+          <span class="hero__letter" style={`--i: ${i}`}>
+            <span class="hero__glyph" data-hero-glyph>{l}</span>
+          </span>
+        ))}
       </span>
     </h1>
   </div>
@@ -71,6 +75,8 @@ const letters = [...'MOTTA'];
     user-select: none;
   }
   .hero__letter { display: block; }
+  /* strato interno: lo muove il cursore (hero-motion.ts), separato dall'entrata della lettera */
+  .hero__glyph { display: block; }
 
   /* --- entrata delle lettere (solo con JS; senza resta tutto visibile) --- */
   :global(.js) .hero__letter {
@@ -92,10 +98,22 @@ const letters = [...'MOTTA'];
     to { opacity: 1; transform: none; }
   }
 
-  /* telefono: etichetta e frase una sopra l'altra, allineate a sinistra */
+  /* telefono: etichetta e frase una sopra l'altra, allineate a sinistra;
+     MOTTA riempie esattamente la larghezza del contenuto (2.6 = larghezza di "MOTTA" in em, con margine) */
   @media (max-width: 599px) {
-    .hero__meta { flex-direction: column; align-items: flex-start; }
+    .hero { padding-top: var(--space-sm); }
+    .hero__meta { flex-direction: column; align-items: flex-start; gap: var(--space-2xs); }
     .hero__tagline { text-align: left; max-width: 44ch; }
+    .hero__title { margin-top: var(--space-xs); container-type: inline-size; }
+    .hero__word { font-size: calc(100cqw / 2.6); }
+  }
+
+  /* telefono in orizzontale: MOTTA non deve occupare tutto lo schermo basso, i filtri restano nel primo schermo */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .hero { padding-top: var(--space-sm); }
+    .hero__tagline { max-width: 54ch; }
+    .hero__title { margin-top: var(--space-xs); }
+    .hero__word { font-size: min(var(--step-hero), calc((100vw - 2 * var(--gutter)) / 2.75), 28svh); }
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -46,12 +46,24 @@ const wraps = next.order < p.order;
     font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4.5rem);
     transition: transform 0.5s var(--ease-out-expo), color 0.25s var(--ease-out-quart);
   }
-  .next-nav__link:hover .next-nav__title { color: var(--accent); }
-  .next-nav__link:hover .next-nav__title { transform: translateX(-6px); }
-  .next-nav__link--next:hover .next-nav__title { transform: translateX(6px); }
-  @media (max-width: 760px) {
+  /* hover solo con puntatore: sui touch resterebbe attivo dopo il tocco */
+  @media (hover: hover) {
+    .next-nav__link:hover .next-nav__title { color: var(--accent); }
+    .next-nav__link:hover .next-nav__title { transform: translateX(-6px); }
+    .next-nav__link--next:hover .next-nav__title { transform: translateX(6px); }
+  }
+  @media (hover: none) {
+    .next-nav__link:active .next-nav__title { color: var(--accent); }
+  }
+  /* sotto ~800px la griglia va a una colonna: blocchi impilati, interi cliccabili */
+  @media (max-width: 799px) {
+    .next-nav__grid { grid-template-columns: minmax(0, 1fr); }
     .next-nav__link,
-    .next-nav__link--next { padding: var(--space-xl) 0; align-items: flex-start; text-align: left; }
+    .next-nav__link--next {
+      padding: var(--space-xl) 0;
+      align-items: flex-start;
+      text-align: left;
+    }
     .next-nav__link--next { border-left: 0; border-top: 1px solid var(--line); }
   }
 </style>

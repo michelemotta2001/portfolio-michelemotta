@@ -33,7 +33,11 @@ const stage = document.querySelector<HTMLElement>('[data-shelf-stage]');
 function initHero() {
   const hero = document.querySelector<HTMLElement>('[data-hero]');
   if (!hero) return;
-  const show = () => requestAnimationFrame(() => hero.classList.add('is-in'));
+  const show = () =>
+    requestAnimationFrame(() => {
+      hero.classList.add('is-in');
+      startHeroMotion(hero);
+    });
   if (reducedMotion.matches || !document.fonts) {
     show();
     return;
@@ -41,6 +45,27 @@ function initHero() {
   // aspetta Anton (al massimo 900 ms) per non animare il carattere di riserva
   const timeout = new Promise((resolve) => setTimeout(resolve, 900));
   Promise.race([document.fonts.load('400 1em Anton'), timeout]).then(show, show);
+}
+
+/**
+ * Lettere che seguono il cursore (richiesta del cliente, libreria Motion).
+ * Solo mouse/trackpad e senza movimento ridotto: su telefono non si scarica nemmeno la libreria.
+ * Parte quando l'entrata delle lettere è finita, così le due animazioni non si sovrappongono.
+ */
+function startHeroMotion(hero: HTMLElement) {
+  const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
+  if (!finePointer.matches || reducedMotion.matches) return;
+  const letters = hero.querySelectorAll<HTMLElement>('.hero__letter');
+  const last = letters[letters.length - 1];
+  let started = false;
+  const start = () => {
+    if (started) return;
+    started = true;
+    import('./hero-motion').then((m) => m.initHeroMotion(hero, finePointer, reducedMotion));
+  };
+  // fine dell'entrata = fine della salita dell'ultima lettera (con rete di sicurezza a tempo)
+  last?.addEventListener('transitionend', (e) => e.propertyName === 'transform' && start());
+  setTimeout(start, 1600);
 }
 
 /* --- 2. entrata della mensola ---------------------------------------------- */
@@ -139,10 +164,31 @@ function initFilters(setActive: (i: number) => void) {
   const root = document.querySelector<HTMLElement>('[data-filters]');
   if (!root) return;
   const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-filter]')];
-  const status = root.querySelector<HTMLElement>('[data-filter-status]');
+  const status = root.querySelector<HTMLElement>('[data-status-main]');
+  const hint = root.querySelector<HTMLElement>('[data-status-hint]');
+  const row = root.querySelector<HTMLElement>('.filters__row');
+  const touch = matchMedia('(hover: none)').matches; // sui touch si "tocca", non si "clicca"
   const items = [...vols, ...rows];
   const total = vols.length;
   let active: string | null = null;
+
+  // riga scorrevole su telefono: sfuma il lato verso cui ci sono altri filtri
+  if (row) {
+    let raf = 0;
+    const edges = () => {
+      raf = 0;
+      const max = row.scrollWidth - row.clientWidth;
+      const left = row.scrollLeft > 4;
+      const right = row.scrollLeft < max - 4;
+      row.dataset.more = left && right ? 'both' : left ? 'left' : right ? 'right' : 'none';
+    };
+    const queue = () => {
+      if (!raf) raf = requestAnimationFrame(edges);
+    };
+    row.addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue, { passive: true });
+    edges();
+  }
 
   const render = () => {
     buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === active)));
@@ -158,13 +204,20 @@ function initFilters(setActive: (i: number) => void) {
       const btn = buttons.find((b) => b.dataset.filter === active);
       if (!active || !btn) {
         setBi(status, `${ui.allWorks.it}: ${total}`, `${ui.allWorks.en}: ${total}`);
+        if (hint) setBi(hint, '', '');
       } else {
         const n = Number(btn.dataset.count);
         setBi(
           status,
-          `${btn.dataset.labelIt}: ${n} ${n === 1 ? 'lavoro' : 'lavori'} — clicca di nuovo per vederli tutti`,
-          `${btn.dataset.labelEn}: ${n} ${n === 1 ? 'work' : 'works'} — click again to see them all`,
+          `${btn.dataset.labelIt}: ${n} ${n === 1 ? 'lavoro' : 'lavori'}`,
+          `${btn.dataset.labelEn}: ${n} ${n === 1 ? 'work' : 'works'}`,
         );
+        if (hint)
+          setBi(
+            hint,
+            ` — ${touch ? 'tocca' : 'clicca'} di nuovo per vederli tutti`,
+            ` — ${touch ? 'tap' : 'click'} again to see them all`,
+          );
       }
     }
 

@@ -4,12 +4,14 @@
  *   data-lb-src     URL dell'immagine grande
  *   data-lb-alt     testo alternativo
  *   data-lb-caption didascalia (facoltativo data-lb-caption-en per la pagina in inglese)
- * Tastiera: ← → per scorrere, Esc per chiudere. Telefono: swipe sinistra/destra.
+ * Tastiera: ← → per scorrere, Esc per chiudere. Telefono: swipe sinistra/destra,
+ * doppio tocco o pinch per ingrandire (poi un dito sposta l'immagine).
  */
 
 const EASE_OUT_QUART = 'cubic-bezier(0.25, 1, 0.5, 1)';
 const EASE_OUT_EXPO = 'cubic-bezier(0.16, 1, 0.3, 1)';
 const SWIPE = 48;
+const MAX_ZOOM = 4;
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -68,6 +70,7 @@ function init(dialog: HTMLDialogElement) {
     index = (i + items.length) % items.length;
     const el = items[index];
     const my = ++token;
+    resetZoom();
     renderText();
 
     const src = el.dataset.lbSrc ?? '';
@@ -156,6 +159,7 @@ function init(dialog: HTMLDialogElement) {
   dialog.addEventListener('close', () => {
     closing = false;
     token++;
+    resetZoom();
     dialog.removeAttribute('aria-busy');
     document.documentElement.style.overflow = prevOverflow;
     trigger?.focus({ preventScroll: true });
@@ -182,7 +186,12 @@ function init(dialog: HTMLDialogElement) {
     return e.clientX >= x && e.clientX <= x + w && e.clientY >= y && e.clientY <= y + h;
   };
 
+  // dopo uno swipe, un pinch o un doppio tocco il "click" che segue non deve chiudere
   let swiped = false;
+  const suppress = () => {
+    swiped = true;
+    window.setTimeout(() => (swiped = false), 350);
+  };
   dialog.addEventListener('click', (e) => {
     if (swiped) {
       swiped = false;
@@ -190,6 +199,7 @@ function init(dialog: HTMLDialogElement) {
     }
     const t = e.target as HTMLElement;
     if (t.closest('button') || capWrap.contains(t)) return;
+    if (zoom > 1) return; // ingrandita: si chiude solo col pulsante
     if (t === img && hitsImage(e)) return;
     close();
   });
@@ -208,44 +218,194 @@ function init(dialog: HTMLDialogElement) {
     }
   });
 
-  // swipe orizzontale (touch/penna); lo scroll verticale e il pinch restano al browser
+  /* --- gesti touch/penna (il mouse resta com'è) ---------------------------------
+     un dito: swipe orizzontale = precedente/successiva; con l'immagine ingrandita sposta.
+     doppio tocco sull'immagine: ingrandisce (le tavole orizzontali riempiono l'altezza) / torna intera.
+     due dita: pinch. Lo zoom usa solo transform; si azzera cambiando immagine o chiudendo. */
+  type Pt = { x: number; y: number };
+  const touches = new Map<number, Pt>();
+  let zoom = 1;
+  let zx = 0;
+  let zy = 0;
+  let pinch: { d: number; z: number; mx: number; my: number } | null = null;
+  let swipeId = -1;
   let startX = 0;
   let startY = 0;
   let dx = 0;
-  let pointer = -1;
-  const reset = () => {
-    pointer = -1;
-    img.style.transform = '';
+  let down = { t: 0, x: 0, y: 0 };
+  let lastTap = { t: 0, x: 0, y: 0 };
+
+  const dist = (a: Pt, b: Pt) => Math.hypot(a.x - b.x, a.y - b.y);
+
+  // riquadro dell'<img> senza trasformazioni + misura del disegno (object-fit: contain) a scala 1
+  const frameOf = () => {
+    const s = stage.getBoundingClientRect();
+    const bw = img.offsetWidth || 1;
+    const bh = img.offsetHeight || 1;
+    const ratio = img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : bw / bh;
+    const fit = bw / bh > ratio ? { w: bh * ratio, h: bh } : { w: bw, h: bw / ratio };
+    return { cx: s.left + img.offsetLeft + bw / 2, cy: s.top + img.offsetTop + bh / 2, bw, bh, ...fit };
   };
+
+  const paint = (smooth = false) => {
+    img.style.transition = smooth && !reduceMotion.matches ? `transform 0.36s ${EASE_OUT_EXPO}` : '';
+    img.style.transform = zoom > 1 ? `translate3d(${zx}px, ${zy}px, 0) scale(${zoom})` : '';
+    dialog.classList.toggle('is-zoomed', zoom > 1);
+  };
+
+  // l'immagine ingrandita non lascia vuoti ai bordi
+  const clampPan = (f = frameOf()) => {
+    const mx = Math.max(0, (f.w * zoom - f.bw) / 2);
+    const my = Math.max(0, (f.h * zoom - f.bh) / 2);
+    zx = Math.min(mx, Math.max(-mx, zx));
+    zy = Math.min(my, Math.max(-my, zy));
+  };
+
+  // porta la scala a z tenendo fermo sotto le dita il punto (px, py)
+  const zoomAt = (z: number, px: number, py: number) => {
+    const f = frameOf();
+    const next = Math.min(MAX_ZOOM, Math.max(1, z));
+    const k = next / zoom;
+    zx = px - f.cx - k * (px - f.cx - zx);
+    zy = py - f.cy - k * (py - f.cy - zy);
+    zoom = next;
+    if (zoom === 1) zx = zy = 0;
+    clampPan(f);
+  };
+
+  const resetZoom = () => {
+    zoom = 1;
+    zx = zy = 0;
+    pinch = null;
+    touches.clear();
+    swipeId = -1;
+    paint();
+  };
+
+  const tapZoom = (px: number, py: number) => {
+    if (zoom > 1) {
+      zoom = 1;
+      zx = zy = 0;
+    } else {
+      const f = frameOf();
+      zoomAt(Math.max(2, f.bh / f.h), px, py);
+    }
+    paint(true);
+  };
+
   stage.addEventListener('pointerdown', (e) => {
-    if (e.pointerType === 'mouse' || items.length < 2 || !e.isPrimary) return;
-    pointer = e.pointerId;
-    startX = e.clientX;
-    startY = e.clientY;
-    dx = 0;
-  });
-  stage.addEventListener('pointermove', (e) => {
-    if (e.pointerId !== pointer) return;
-    dx = e.clientX - startX;
-    const dy = e.clientY - startY;
-    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 12) {
+    if (e.pointerType === 'mouse') return;
+    touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    img.style.transition = '';
+    if (touches.size === 1) {
+      down = { t: e.timeStamp, x: e.clientX, y: e.clientY };
+      if (zoom === 1 && items.length > 1) {
+        swipeId = e.pointerId;
+        startX = e.clientX;
+        startY = e.clientY;
+        dx = 0;
+      }
+    } else if (touches.size === 2) {
+      // secondo dito: parte il pinch, lo swipe si annulla
+      swipeId = -1;
       dx = 0;
-      reset();
+      lastTap.t = 0;
+      const [a, b] = [...touches.values()];
+      pinch = { d: Math.max(1, dist(a, b)), z: zoom, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 };
+      paint();
+    }
+  });
+
+  stage.addEventListener('pointermove', (e) => {
+    const prev = touches.get(e.pointerId);
+    if (!prev) return;
+    const cur = { x: e.clientX, y: e.clientY };
+    touches.set(e.pointerId, cur);
+
+    if (pinch && touches.size > 1) {
+      const [a, b] = [...touches.values()];
+      const mx = (a.x + b.x) / 2;
+      const my = (a.y + b.y) / 2;
+      // il pinch segue anche lo spostamento delle dita
+      zx += mx - pinch.mx;
+      zy += my - pinch.my;
+      pinch.mx = mx;
+      pinch.my = my;
+      zoomAt(pinch.z * (dist(a, b) / pinch.d), mx, my);
+      paint();
+      return;
+    }
+
+    if (zoom > 1) {
+      zx += cur.x - prev.x;
+      zy += cur.y - prev.y;
+      clampPan();
+      paint();
+      return;
+    }
+
+    if (e.pointerId !== swipeId) return;
+    dx = cur.x - startX;
+    const dy = cur.y - startY;
+    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 12) {
+      swipeId = -1;
+      dx = 0;
+      img.style.transform = '';
       return;
     }
     if (!reduceMotion.matches) img.style.transform = `translateX(${dx * 0.5}px)`;
   });
-  stage.addEventListener('pointerup', (e) => {
-    if (e.pointerId !== pointer) return;
-    const moved = dx;
-    reset();
-    if (Math.abs(moved) > SWIPE) {
-      swiped = true;
-      window.setTimeout(() => (swiped = false), 350);
-      go(moved < 0 ? 1 : -1);
+
+  const lift = (e: PointerEvent) => {
+    if (!touches.delete(e.pointerId)) return;
+
+    if (pinch) {
+      if (touches.size < 2) {
+        pinch = null;
+        if (zoom < 1.1) {
+          zoom = 1;
+          zx = zy = 0;
+        }
+        paint(true);
+        suppress();
+      }
+      return;
     }
+
+    if (e.pointerId === swipeId) {
+      const moved = dx;
+      swipeId = -1;
+      dx = 0;
+      img.style.transform = '';
+      if (e.type === 'pointerup' && Math.abs(moved) > SWIPE) {
+        lastTap.t = 0;
+        suppress();
+        go(moved < 0 ? 1 : -1);
+        return;
+      }
+    }
+    if (e.type !== 'pointerup') return;
+
+    const tap = e.timeStamp - down.t < 300 && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 10;
+    if (!tap) {
+      lastTap.t = 0;
+      if (zoom > 1) suppress(); // fine di uno spostamento
+      return;
+    }
+    const again = e.timeStamp - lastTap.t < 320 && Math.hypot(e.clientX - lastTap.x, e.clientY - lastTap.y) < 40;
+    if (again) {
+      lastTap.t = 0;
+      tapZoom(e.clientX, e.clientY);
+      suppress();
+    } else if (zoom > 1 || hitsImage(e)) {
+      lastTap = { t: e.timeStamp, x: e.clientX, y: e.clientY };
+    }
+  };
+  stage.addEventListener('pointerup', lift);
+  stage.addEventListener('pointercancel', lift);
+  addEventListener('resize', () => {
+    if (zoom > 1) resetZoom();
   });
-  stage.addEventListener('pointercancel', reset);
 
   // apertura: delega sul documento, vale anche per elementi aggiunti dopo
   document.addEventListener('click', (e) => {

@@ -9,7 +9,7 @@
  */
 import { Image } from 'astro:assets';
 import T from '../T.astro';
-import { ui } from '../../lib/i18n';
+import { ui, bi } from '../../lib/i18n';
 import { workHref, type Project } from '../../lib/data';
 import { img } from '../../lib/images';
 
@@ -39,7 +39,7 @@ const vols = works.map((w, i) => {
     `(min-width: 1024px) ${Math.round(20 * k)}vw`,
     `(min-width: 768px) ${Math.round(27 * k)}vw`,
     `(min-width: 560px) ${Math.round(40 * k)}vw`,
-    `${Math.round(62 * k)}vw`,
+    `${Math.round(58 * k)}vw`, // telefono: stessa larghezza del volume (--vol-w), niente varianti da desktop
   ].join(', ');
   return {
     ...w,
@@ -86,6 +86,7 @@ const first = works[0];
                 sizes={v.sizes}
                 format="webp"
                 loading={i < 3 ? 'eager' : 'lazy'}
+                fetchpriority={i === 0 ? 'high' : 'auto'}
                 decoding="async"
                 style={`object-position: ${v.focus}`}
               />
@@ -108,7 +109,13 @@ const first = works[0];
       <span class="shelf__dot" aria-hidden="true">·</span>
       <T t={first.p.kind} class="shelf__kind" data-cap-kind />
     </p>
-    <T t={ui.shelfHint} as="p" class="shelf__hint label" />
+    <T t={ui.shelfHint} as="p" class="shelf__hint shelf__hint--pointer label" />
+    <!-- touch: niente "passa sopra", si scorre la fila e si tocca -->
+    <T
+      t={bi('Scorri e tocca un volume per aprirlo', 'Swipe and tap a volume to open it')}
+      as="p"
+      class="shelf__hint shelf__hint--touch label"
+    />
   </div>
 </div>
 
@@ -144,10 +151,10 @@ const first = works[0];
   }
   .shelf__stage::-webkit-scrollbar { display: none; }
 
-  /* larghezza: ~62vw telefono, ~27vw iPad (il volume successivo si intravede sempre);
+  /* larghezza: ~58vw telefono, ~27vw iPad (il volume successivo si intravede sempre);
      su schermi bassi (telefono in orizzontale) il volume intero deve stare nello schermo */
   .vol {
-    --vol-w: clamp(132px, calc((100svh - var(--header-h) - 120px) * 0.69), 62vw);
+    --vol-w: clamp(132px, calc((100svh - var(--header-h) - 120px) * 0.69), 58vw);
     position: relative;
     z-index: var(--z);
     display: block;
@@ -266,6 +273,10 @@ const first = works[0];
   @media (hover: hover) {
     .vol:hover .vol__body { transform: translateY(calc(-1 * var(--lift))); }
   }
+  /* touch: il volume si alza sotto il dito mentre si apre il lavoro */
+  @media (hover: none) {
+    .vol:active .vol__body { transform: translateY(calc(-1 * var(--lift))); transition-duration: 0.2s; }
+  }
   .vol:focus-visible { outline: none; z-index: 20; }
   .vol:focus-visible .vol__body { transform: translateY(calc(-1 * var(--lift))); }
   .vol:focus-visible .vol__face { outline: 2px solid var(--accent); outline-offset: 3px; }
@@ -352,9 +363,21 @@ const first = works[0];
   .shelf__title { font-weight: 700; color: var(--paper); }
   .shelf__now :global(.shelf__kind) { color: var(--text-2); }
   .shelf__hint { text-align: right; }
+  .shelf__hint--touch { display: none; }
+  @media (hover: none) {
+    .shelf__hint--pointer { display: none; }
+    .shelf__hint--touch { display: block; }
+  }
 
+  /* telefono: la mensola parte subito sotto i filtri, didascalia compatta */
   @media (max-width: 767px) {
-    .shelf__caption { flex-direction: column; }
+    .shelf { padding-top: 0; }
+    .shelf__caption {
+      flex-direction: column;
+      gap: var(--space-3xs);
+      margin-top: var(--space-sm);
+      padding-top: var(--space-xs);
+    }
     .shelf__hint { text-align: left; }
   }
 
@@ -367,6 +390,7 @@ const first = works[0];
       transition: none;
     }
     .vol:hover .vol__body,
+    .vol:active .vol__body,
     .vol:focus-visible .vol__body { transform: none; }
   }
 </style>

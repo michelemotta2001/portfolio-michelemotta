@@ -145,7 +145,8 @@ for (const it of items) {
 }
 
 const sizes = {
-  wide: '(min-width: 1304px) 1240px, 94vw',
+  // sotto i 600px le doppie pagine vanno a filo schermo
+  wide: '(min-width: 1304px) 1240px, (min-width: 600px) 94vw, 100vw',
   pair: '(min-width: 1180px) 540px, (min-width: 600px) 46vw, 94vw',
   solo: '(min-width: 600px) 544px, 94vw',
 };
@@ -318,6 +319,23 @@ const widths = {
   }
   .eg__dash { color: var(--line-strong); }
 
+  /* --- touch: nessun hover, quindi l'icona "ingrandisci" resta visibile ------ */
+  @media (hover: none) {
+    .eg__btn { -webkit-tap-highlight-color: transparent; }
+    .eg__img { transition: opacity 0.2s var(--ease-out-quart); }
+    .eg__btn:active .eg__img { opacity: 0.86; }
+    /* stessa misura delle tavole nelle pagine progetto */
+    .eg__zoom {
+      right: var(--space-xs);
+      bottom: var(--space-xs);
+      width: 32px;
+      height: 32px;
+      opacity: 0.92;
+      transform: none;
+    }
+    .eg__zoom svg { width: 15px; height: 15px; }
+  }
+
   /* --- telefono: una colonna, nessuno sfalsamento --------------------------- */
   @media (max-width: 599px) {
     .eg { --eg-gap: var(--space-2xl); }
@@ -328,5 +346,22 @@ const widths = {
     }
     .eg__item--low { translate: none; }
     .eg__cap { margin-top: var(--space-xs); }
+  }
+
+  /* doppie pagine a filo schermo: +32px di larghezza utile per leggerle;
+     la didascalia resta allineata al margine del testo */
+  @media (max-width: 599px) and (orientation: portrait) {
+    .eg__row--wide .eg__item {
+      width: auto;
+      margin-inline: calc(-1 * var(--gutter));
+    }
+    .eg__row--wide .eg__cap { padding-inline: var(--gutter); }
+  }
+
+  /* telefono in orizzontale: niente tetto d'altezza (a 390px di altezza
+     riduceva le doppie pagine a 320px). Si scorre; il lightbox le mostra intere */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .eg__row--wide .eg__item { width: 100%; }
+    .eg__row--solo .eg__item { width: min(100%, 26rem); }
   }
 </style>

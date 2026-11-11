@@ -55,17 +55,16 @@ function initMenu() {
   const btn = document.querySelector<HTMLButtonElement>('[data-menu-btn]');
   const menu = document.querySelector<HTMLElement>('[data-menu]');
   if (!btn || !menu) return;
-  const close = () => {
-    btn.setAttribute('aria-expanded', 'false');
-    menu.classList.remove('is-open');
-    document.documentElement.style.overflow = '';
-  };
-  btn.addEventListener('click', () => {
-    const open = btn.getAttribute('aria-expanded') !== 'true';
+  // con il menu aperto la pagina sotto non scorre e non riceve il focus (Tab resta nel menu)
+  const behind = [...document.querySelectorAll<HTMLElement>('main, .site-footer, .skip-link')];
+  const set = (open: boolean) => {
     btn.setAttribute('aria-expanded', String(open));
     menu.classList.toggle('is-open', open);
     document.documentElement.style.overflow = open ? 'hidden' : '';
-  });
+    behind.forEach((el) => (el.inert = open));
+  };
+  const close = () => set(false);
+  btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true'));
   menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {

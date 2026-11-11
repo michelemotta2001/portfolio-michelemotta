@@ -39,19 +39,20 @@ const total = works.length;
       >
         <T t={f.label} class="filter__name" />
         <span class="filter__count" aria-hidden="true">{f.count}</span>
+        <!-- telefono: la × sul filtro attivo dice che si toglie toccandolo di nuovo -->
+        <span class="filter__x" aria-hidden="true">×</span>
         <span class="sr-only">
           <T t={bi(`, ${f.count} ${f.count === 1 ? 'lavoro' : 'lavori'}`, `, ${f.count} ${f.count === 1 ? 'work' : 'works'}`)} />
         </span>
       </button>
     ))}
   </div>
-  <T
-    t={bi(`${ui.allWorks.it}: ${total}`, `${ui.allWorks.en}: ${total}`)}
-    as="p"
-    class="filters__status"
-    aria-live="polite"
-    data-filter-status
-  />
+  <!-- stato in due parti: su telefono si vede solo la prima, così resta su una riga -->
+  <p class="filters__status" aria-live="polite" data-filter-status>
+    <T t={bi(`${ui.allWorks.it}: ${total}`, `${ui.allWorks.en}: ${total}`)} data-status-main /><span
+      class="filters__hint"
+      data-status-hint></span>
+  </p>
 </div>
 
 <style>
@@ -108,9 +109,13 @@ const total = works.length;
     text-align: center;
   }
 
+  .filter__x { display: none; }
+
   /* telefono: una sola riga scorrevole a tutta larghezza invece di tre righe di bottoni */
   @media (max-width: 767px) {
+    .filters { padding-top: var(--space-sm); }
     .filters__row {
+      --fade: 40px;
       flex-wrap: nowrap;
       justify-content: flex-start;
       overflow-x: auto;
@@ -119,9 +124,36 @@ const total = works.length;
       padding: 6px var(--gutter); /* spazio per l'anello di focus, che lo scroller taglierebbe */
       scroll-padding-inline: var(--gutter);
       scrollbar-width: none;
+      /* i filtri continuano: il bordo verso cui si può scorrere sfuma (home.ts aggiorna gli attributi) */
+      -webkit-mask-image: linear-gradient(to right, #000 calc(100% - var(--fade)), transparent);
+      mask-image: linear-gradient(to right, #000 calc(100% - var(--fade)), transparent);
     }
-    .filters__row::-webkit-scrollbar { display: none; }
+    .filters__row[data-more='both'] {
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade) calc(100% - var(--fade)), transparent);
+      mask-image: linear-gradient(to right, transparent, #000 var(--fade) calc(100% - var(--fade)), transparent);
+    }
+    .filters__row[data-more='left'] {
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade));
+      mask-image: linear-gradient(to right, transparent, #000 var(--fade));
+    }
+    .filters__row[data-more='none'] { -webkit-mask-image: none; mask-image: none; }
     .filter { flex: none; }
-    .filters__status { text-align: left; min-height: 3.3em; } /* due righe: la mensola non salta */
+    .filter[aria-pressed='true'] { padding-right: 12px; }
+    .filter[aria-pressed='true'] .filter__x {
+      display: block;
+      margin-left: 2px;
+      font-size: var(--step-1);
+      line-height: 1;
+      font-weight: 400;
+    }
+    /* una riga sola: il suggerimento lo dà la ×, la mensola sotto non salta */
+    .filters__status {
+      margin-top: var(--space-2xs);
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .filters__hint { display: none; }
   }
 </style>

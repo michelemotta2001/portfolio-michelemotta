@@ -2,7 +2,8 @@
 /**
  * Lightbox condiviso: si include una volta per pagina (<Lightbox />).
  * <dialog> nativo (focus intrappolato, Esc chiude), clic sullo sfondo chiude,
- * frecce e swipe per scorrere dentro lo stesso gruppo. Logica in src/scripts/lightbox.ts.
+ * frecce e swipe per scorrere dentro lo stesso gruppo, doppio tocco/pinch per ingrandire su
+ * touch. Su telefono comandi in basso (‹ chiudi ›). Logica in src/scripts/lightbox.ts.
  *
  * Contratto per gli elementi apribili, ovunque nella pagina:
  *   <button type="button" data-lb-item data-lb-group="NOME_GRUPPO" data-lb-src={URL_GRANDE}
@@ -82,6 +83,7 @@ const next = bi('Immagine successiva', 'Next image');
     position: relative;
     grid-row: 2;
     min-height: 0;
+    overflow: hidden; /* l'immagine ingrandita (zoom touch) non esce dallo spazio */
     touch-action: pan-y pinch-zoom;
   }
   .lb-img {
@@ -185,6 +187,82 @@ const next = bi('Immagine successiva', 'Next image');
       top: var(--space-md);
       right: var(--space-md);
     }
+  }
+
+  /* Telefono in verticale: immagine da bordo a bordo (aree sicure escluse), didascalia sopra
+     e comandi in basso alla portata del pollice: ‹ chiudi › */
+  @media (max-width: 759px) {
+    /* fondo pieno: a tutto schermo la pagina sotto non deve trasparire */
+    .lb { background: var(--ink); }
+    .lb[open] {
+      grid-template-rows: calc(var(--space-xs) + env(safe-area-inset-top)) minmax(0, 1fr) auto;
+    }
+    .lb-img {
+      inset: 0 env(safe-area-inset-right) 0 env(safe-area-inset-left);
+      width: calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right));
+    }
+    .lb-bar {
+      grid-template-areas:
+        'cap cap cap'
+        'prev . next';
+      row-gap: var(--space-xs);
+      padding:
+        var(--space-xs)
+        calc(var(--space-sm) + env(safe-area-inset-right))
+        calc(var(--space-sm) + env(safe-area-inset-bottom))
+        calc(var(--space-sm) + env(safe-area-inset-left));
+    }
+    .lb-cap { grid-area: cap; }
+    .lb-prev { grid-area: prev; }
+    .lb-next { grid-area: next; }
+    .lb-close {
+      top: auto;
+      right: auto;
+      bottom: calc(var(--space-sm) + env(safe-area-inset-bottom));
+      left: calc(50% - 24px);
+    }
+  }
+
+  /* Telefono in orizzontale (schermi bassi): tutta l'altezza all'immagine, frecce ai lati */
+  @media (max-height: 520px) and (orientation: landscape) {
+    .lb { background: var(--ink); }
+    .lb[open] { grid-template-rows: 8px minmax(0, 1fr) auto; }
+    .lb-img {
+      inset: 0 calc(72px + env(safe-area-inset-right)) 0 calc(72px + env(safe-area-inset-left));
+      width: calc(100% - 144px - env(safe-area-inset-left) - env(safe-area-inset-right));
+    }
+    .lb-bar {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: 'cap';
+      padding: 6px 72px calc(8px + env(safe-area-inset-bottom));
+    }
+    .lb-prev,
+    .lb-next {
+      position: absolute;
+      top: 50%;
+      margin-top: -24px;
+      /* il dialog (griglia) è il contenitore: senza questo l'area "prev"/"next" inesistente
+         lo ridurrebbe a una colonna vuota fuori schermo */
+      grid-area: auto;
+    }
+    .lb-prev { left: calc(12px + env(safe-area-inset-left)); }
+    .lb-next { right: calc(12px + env(safe-area-inset-right)); }
+    .lb-close {
+      top: 8px;
+      bottom: auto;
+      left: auto;
+      right: calc(12px + env(safe-area-inset-right));
+    }
+  }
+
+  /* touch: i gesti sull'immagine (swipe, doppio tocco, pinch) li gestisce lightbox.ts;
+     niente scroll né zoom della pagina sotto */
+  @media (pointer: coarse) {
+    .lb {
+      touch-action: none;
+      overscroll-behavior: contain;
+    }
+    .lb-stage { touch-action: none; }
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -79,7 +79,7 @@ const [lead, ...rest] = p.paragraphs;
     ))}
     {p.article && (
       <a class="ed-pill reveal" href={p.article.href} target="_blank" rel="noopener noreferrer" style="--reveal-delay: 120ms">
-        <span><T t={ui.readArticle} /> — {p.article.label}</span>
+        <span class="ed-pill__text"><T t={ui.readArticle} class="ed-pill__lead" /><span class="ed-pill__dash"> — </span><span class="ed-pill__src">{p.article.label}</span></span>
         <span class="sr-only"><T t={bi('(si apre in una nuova scheda)', '(opens in a new tab)')} /></span>
         <svg class="ed-pill__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M7 17 17 7M8 7h9v9" />
@@ -123,7 +123,10 @@ const [lead, ...rest] = p.paragraphs;
     color: var(--text-2);
   }
   .ed-hero__arrow { transition: transform 0.4s var(--ease-out-expo); }
-  .ed-hero__back:hover .ed-hero__arrow { transform: translateX(-4px); }
+  /* hover solo con puntatore: sul touch resterebbe "appeso" dopo il tap */
+  @media (hover: hover) {
+    .ed-hero__back:hover .ed-hero__arrow { transform: translateX(-4px); }
+  }
 
   .ed-hero__head {
     display: flex;
@@ -249,15 +252,19 @@ const [lead, ...rest] = p.paragraphs;
       border-color 0.3s var(--ease-out-quart),
       color 0.3s var(--ease-out-quart);
   }
-  .ed-pill:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
   .ed-pill__icon {
     flex: none;
     transition: transform 0.45s var(--ease-out-expo);
   }
-  .ed-pill:hover .ed-pill__icon { transform: translate(2px, -2px); }
+  @media (hover: hover) {
+    .ed-pill:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .ed-pill:hover .ed-pill__icon { transform: translate(2px, -2px); }
+  }
+  /* feedback al tocco */
+  .ed-pill:active { border-color: var(--accent); }
 
   /* --- telefono -------------------------------------------------------------- */
 
@@ -269,9 +276,13 @@ const [lead, ...rest] = p.paragraphs;
   @media (max-width: 599px) {
     .ed-hero__head { padding-top: var(--space-2xl); }
 
-    /* crediti come piccola tabella: etichetta a sinistra, valore a destra */
+    /* crediti come piccola tabella: etichetta a sinistra, valore a destra.
+       Colonna a tutta larghezza: con valori brevi (Gentleman) la traccia si
+       restringeva al contenuto e le righe interne non arrivavano ai bordi */
     .ed-credits {
       display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      justify-content: stretch;
       padding-block: 0;
     }
     .ed-credits__item {
@@ -297,5 +308,49 @@ const [lead, ...rest] = p.paragraphs;
       text-align: left;
     }
     .ed-text__lead { font-size: var(--step-1); line-height: 1.55; }
+
+    /* link all'articolo: bottone a tutta larghezza su due righe
+       (etichetta + testata), invece di una pillola spezzata a metà nome */
+    .ed-pill {
+      align-self: stretch;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      min-height: 64px;
+      margin-top: var(--space-2xs);
+      padding: var(--space-xs) var(--space-md);
+    }
+    .ed-pill__text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .ed-pill__lead {
+      font-size: var(--step--2);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .ed-pill__dash { display: none; }
+    .ed-pill__src {
+      font-size: var(--step-0);
+      line-height: 1.35;
+    }
+  }
+
+  /* telefono in orizzontale: hero compatto, il titolo sta intero nel primo schermo */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .ed-hero { padding-bottom: var(--space-xl); }
+    .ed-hero__head { padding-top: var(--space-md); }
+    .ed-hero__kicker { margin-bottom: var(--space-sm); }
+    .ed-hero__name {
+      font-size: min(var(--step-5), 19vw, 26vh);
+      font-size: min(var(--step-5), 19vw, 26svh);
+    }
+    .ed-hero__sub {
+      margin-top: var(--space-2xs);
+      font-size: min(var(--step-3), 11vh);
+      font-size: min(var(--step-3), 11svh);
+    }
   }
 </style>

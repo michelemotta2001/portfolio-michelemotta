@@ -48,7 +48,8 @@
   --space-3xl: 96px;
   --space-4xl: 128px;
   --section: clamp(64px, 9vw, 128px);
-  --gutter: clamp(16px, 4vw, 32px);
+  /* margine laterale: mai sotto il notch dell'iPhone in orizzontale (viewport-fit=cover) */
+  --gutter: max(clamp(16px, 4vw, 32px), env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
   --wrap: 1240px;
   --header-h: 64px;
 
@@ -60,6 +61,11 @@
   --z-lightbox: 50;
 }
 
+/* telefono: header più basso, più spazio ai contenuti nel primo schermo */
+@media (max-width: 599px) {
+  :root { --header-h: 56px; }
+}
+
 *,
 *::before,
 *::after { box-sizing: border-box; }
@@ -67,7 +73,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
-  scroll-padding-top: calc(var(--header-h) + 16px);
+  scroll-padding-top: calc(var(--header-h) + env(safe-area-inset-top, 0px) + 16px);
 }
 
 body {
