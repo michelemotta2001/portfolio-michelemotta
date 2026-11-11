@@ -1,7 +1,8 @@
 /**
  * Pagine progetto:
  *  - intro: il testo sticky deve stare nello schermo; se non entra si ferma col fondo
- *  - line up: la pista a scorrimento cambia il modello sul palco (rAF, listener passivo)
+ *  - line up: su telefono le tavole a riga scorrono in orizzontale (indicatore di avanzamento);
+ *    la pista a scorrimento cambia il modello sul palco (rAF, listener passivo)
  *  - archivio: tab ARIA (frecce, Home/End), sfumatura sulla barra, ingresso del pannello
  */
 
@@ -42,6 +43,38 @@ function initIntro(root: HTMLElement) {
   addEventListener('resize', fit, { passive: true });
   wide.addEventListener('change', fit);
   fit();
+}
+
+/* --- Line up: tavole a riga (telefono: striscia orizzontale) ------------------- */
+
+function initStrip(strip: HTMLElement) {
+  const ui = strip.parentElement?.querySelector<HTMLElement>('[data-lu-swipe]');
+  const thumb = ui?.querySelector<HTMLElement>('[data-lu-thumb]');
+  if (!ui || !thumb) return;
+  let frame = 0;
+
+  // avanzamento solo con transform: lo spostamento è in % della larghezza del cursore
+  const move = () => {
+    frame = 0;
+    thumb.style.transform = `translate3d(${(strip.scrollLeft / Math.max(1, strip.clientWidth)) * 100}%, 0, 0)`;
+  };
+  // l'indicatore compare solo quando la striscia è davvero più larga dello schermo (telefono)
+  const measure = () => {
+    const over = strip.scrollWidth - strip.clientWidth > 4;
+    ui.hidden = !over;
+    if (over) thumb.style.setProperty('--lu-thumb', `${(strip.clientWidth / strip.scrollWidth) * 100}%`);
+    move();
+  };
+
+  strip.addEventListener(
+    'scroll',
+    () => {
+      if (!frame) frame = requestAnimationFrame(move);
+    },
+    { passive: true },
+  );
+  if ('ResizeObserver' in window) new ResizeObserver(measure).observe(strip);
+  measure();
 }
 
 /* --- Line up: sequenza a scorrimento ---------------------------------------- */
@@ -264,5 +297,6 @@ function initTabs(root: HTMLElement) {
 /* --- avvio -------------------------------------------------------------------- */
 
 document.querySelectorAll<HTMLElement>('[data-intro]').forEach(initIntro);
+document.querySelectorAll<HTMLElement>('[data-lu-strip]').forEach(initStrip);
 document.querySelectorAll<HTMLElement>('[data-lineup]').forEach(initLineup);
 document.querySelectorAll<HTMLElement>('[data-archive]').forEach(initTabs);

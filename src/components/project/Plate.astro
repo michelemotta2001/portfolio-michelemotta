@@ -100,7 +100,10 @@ const big = await getImage({
     object-fit: contain;
     transition: transform 0.8s var(--ease-out-quart);
   }
-  .pj-plate__btn:hover > :global(img) { transform: scale(1.015); }
+  /* solo con puntatore: sui touch l'hover resterebbe attivo dopo il tocco */
+  @media (hover: hover) {
+    .pj-plate__btn:hover > :global(img) { transform: scale(1.015); }
+  }
 
   .pj-plate__btn:focus-visible {
     outline: 2px solid var(--accent);
@@ -137,6 +140,8 @@ const big = await getImage({
       opacity: 0.92;
       transform: none;
     }
+    /* riscontro al tocco */
+    .pj-plate__btn:active > :global(img) { opacity: 0.86; }
   }
 
   .pj-plate__cap {

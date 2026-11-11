@@ -35,8 +35,8 @@ const steps = site.path.map((item) => ({
 
   .path__list {
     display: grid;
-    gap: var(--space-xl);
-    margin-top: var(--space-xl);
+    gap: var(--space-lg);
+    margin-top: var(--space-lg);
   }
 
   .path__item {
@@ -55,6 +55,7 @@ const steps = site.path.map((item) => ({
   .path__title {
     font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
     color: var(--paper);
+    text-wrap: balance; /* se va a capo (schermi stretti), due righe equilibrate */
   }
   .path__text {
     max-width: 42ch;
@@ -63,7 +64,7 @@ const steps = site.path.map((item) => ({
 
   /* iPad verticale: una riga per voce, titolo a sinistra e testo a destra */
   @media (min-width: 600px) and (max-width: 1023px) {
-    .path__list { gap: 0; }
+    .path__list { gap: 0; margin-top: var(--space-xl); }
     .path__item {
       grid-template-columns: 2.5rem minmax(0, 5fr) minmax(0, 6fr);
       column-gap: var(--space-md);

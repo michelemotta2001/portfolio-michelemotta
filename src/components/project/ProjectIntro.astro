@@ -101,6 +101,17 @@ const sizes = single
     align-items: start;
   }
 
+  /* telefono: lead più contenuto (Titina non diventa un muro di testo) */
+  @media (max-width: 599px) {
+    .pj-intro__label { margin-bottom: var(--space-md); }
+    .pj-intro__lead {
+      font-size: 1.25rem;
+      line-height: 1.38;
+      letter-spacing: -0.008em;
+    }
+    [data-density='dense'] .pj-intro__lead { font-size: 1.1875rem; }
+  }
+
   /* iPad verticale: foto due a due sotto il testo */
   @media (min-width: 600px) and (max-width: 899px) {
     .pj-intro__media:not([data-count='1']) { grid-template-columns: repeat(2, minmax(0, 1fr)); }

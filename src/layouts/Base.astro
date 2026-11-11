@@ -32,7 +32,10 @@ const ogUrl = og ? new URL(og.src, Astro.site).href : undefined;
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical.href} />
     <meta name="theme-color" content="#121110" />
+    <!-- ICO per Safari e browser vecchi, SVG per i moderni, PNG per la schermata Home di iPhone/iPad -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Michele Motta" />
     <meta property="og:locale" content="it_IT" />

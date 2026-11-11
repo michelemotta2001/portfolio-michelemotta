@@ -43,11 +43,12 @@ const sizesFor: Record<Layout, string> = {
   single: '(min-width: 1320px) 1240px, calc(100vw - 32px)',
   spread: '(min-width: 700px) 46vw, calc(100vw - 32px)',
 };
+// 800: misura giusta per un telefono a 2x (≈ 343–398px di tavola a tutta larghezza)
 const widthsFor: Record<Layout, number[]> = {
-  grid: [400, 640, 960, 1280],
-  portrait: [300, 480, 640, 960],
+  grid: [400, 640, 800, 960, 1280],
+  portrait: [300, 480, 640, 800, 960],
   single: [600, 900, 1240, 1600, 2000, 2480],
-  spread: [400, 640, 960, 1280],
+  spread: [400, 640, 800, 960, 1280],
 };
 
 const countLabel = (t: Item): Bi =>
@@ -214,6 +215,16 @@ const yarns = p.filati;
     mask-image: linear-gradient(90deg, transparent, black 56px, black calc(100% - 56px), transparent);
   }
 
+  /* telefono: la barra arriva al bordo dello schermo, così la sfumatura indica che continua */
+  @media (max-width: 699px) {
+    .pj-tabs {
+      gap: 4px;
+      margin-inline: calc(-1 * var(--gutter));
+      padding-inline: calc(var(--gutter) - 8px);
+      scroll-padding-inline: var(--gutter);
+    }
+  }
+
   .pj-tab {
     position: relative;
     flex: 0 0 auto;
@@ -371,6 +382,7 @@ const yarns = p.filati;
     }
     .pj-yarns__table,
     .pj-yarns__table tbody { display: block; }
+    .pj-yarns__table { font-size: var(--step-0); }
     .pj-yarns__table tr {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));

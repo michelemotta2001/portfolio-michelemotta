@@ -30,10 +30,16 @@ const m0 = first ? img(first.src) : undefined;
 const ar = m0 ? m0.width / m0.height : 0.32;
 const looks = new Set(models.map((m) => m.look)).size;
 
-const plateSizes =
-  plates.length > 1
-    ? '(min-width: 1320px) 608px, (min-width: 700px) 47vw, calc(100vw - 32px)'
-    : '(min-width: 1320px) 1240px, calc(100vw - 32px)';
+// Telefono: le tavole stanno in una striscia orizzontale alta al massimo PLATE_H
+// (vedi --lu-plate-h), quindi la larghezza mostrata dipende dal rapporto della tavola
+const PLATE_H = 440;
+const plateSizes = (path: string) => {
+  const meta = img(path);
+  const phone = `(max-width: 699px) ${Math.round((PLATE_H * meta.width) / meta.height)}px`;
+  return plates.length > 1
+    ? `${phone}, (min-width: 1320px) 608px, (min-width: 700px) 47vw, calc(100vw - 32px)`
+    : `${phone}, (min-width: 1320px) 1240px, calc(100vw - 32px)`;
+};
 
 const modelAlt = (m: Model) =>
   m.side.it.toLowerCase() === 'figurino'
@@ -48,10 +54,9 @@ const modelAlt = (m: Model) =>
     </div>
 
     {plates.length > 0 && (
-      <div class="pj-lineup__plates" data-count={plates.length}>
+      <div class="pj-lineup__plates reveal" data-count={plates.length} data-lu-strip>
         {plates.map((path, i) => (
           <Plate
-            class="reveal"
             path={path}
             group="lineup"
             alt={plates.length > 1
@@ -61,10 +66,19 @@ const modelAlt = (m: Model) =>
               `Line up — Tavola ${pad2(i + 1)} / ${pad2(plates.length)}`,
               `Line up — Plate ${pad2(i + 1)} / ${pad2(plates.length)}`,
             )}
-            sizes={plateSizes}
+            sizes={plateSizes(path)}
             widths={[600, 900, 1240, 1600, 2000, 2480]}
           />
         ))}
+      </div>
+    )}
+    {plates.length > 0 && (
+      <div class="pj-lineup__swipe" data-lu-swipe hidden aria-hidden="true">
+        <T t={bi('Scorri la line up', 'Swipe the line up')} class="label" />
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 12h16M14 6l6 6-6 6"></path>
+        </svg>
+        <span class="pj-lineup__bar"><span class="pj-lineup__thumb" data-lu-thumb></span></span>
       </div>
     )}
   </div>
@@ -145,6 +159,55 @@ const modelAlt = (m: Model) =>
   }
   @media (min-width: 700px) {
     .pj-lineup__plates[data-count='2'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  .pj-lineup__swipe { display: none; }
+
+  /* Telefono: la tavola resta "a riga" ma a un'altezza leggibile, si scorre col pollice
+     in orizzontale (da bordo a bordo dello schermo); tocco = lightbox come su desktop */
+  @media (max-width: 699px) {
+    .pj-lineup__plates {
+      --lu-plate-h: clamp(220px, 56svh, 440px);
+      display: flex;
+      gap: var(--space-xs);
+      margin-inline: calc(-1 * var(--gutter));
+      padding-inline: var(--gutter);
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x proximity;
+      scroll-padding-inline: var(--gutter);
+      scrollbar-width: none;
+    }
+    .pj-lineup__plates::-webkit-scrollbar { display: none; }
+    .pj-lineup__plates > :global(.pj-plate) {
+      flex: 0 0 auto;
+      width: calc(var(--lu-plate-h) * var(--ar));
+      scroll-snap-align: start;
+    }
+
+    /* indicazione + avanzamento: compaiono solo se la striscia è più larga dello schermo */
+    .pj-lineup__swipe:not([hidden]) {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2xs);
+      margin-top: var(--space-sm);
+      color: var(--muted);
+    }
+    .pj-lineup__bar {
+      position: relative;
+      flex: 1;
+      height: 2px;
+      margin-left: var(--space-xs);
+      overflow: hidden;
+      background: var(--line);
+    }
+    .pj-lineup__thumb {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: var(--lu-thumb, 30%);
+      background: var(--pj-accent-ink, var(--accent));
+      will-change: transform;
+    }
   }
 
   /* (b) sequenza. Base = fila orizzontale scorrevole (senza JS / movimento ridotto) */
@@ -323,11 +386,18 @@ const modelAlt = (m: Model) =>
     }
   }
 
-  /* Telefono: numero del look piccolo sopra, informazioni sotto */
-  @media (prefers-reduced-motion: no-preference) and (max-width: 699px) {
+  /* Telefono: numero del look piccolo sopra, informazioni sotto.
+     Il modello prende tutta l'altezza libera (svh: stabile con la barra di Safari) senza mai
+     superare la larghezza; passo più corto: 10–12 modelli in circa 4 schermate di scroll */
+  @media (prefers-reduced-motion: no-preference) and (max-width: 699px) and (min-height: 521px) {
     .pj-seq {
-      --lu-h: min(62svh, calc(100svh - var(--header-h) - 220px));
-      --lu-pad: 12px;
+      --lu-step: 38svh;
+      --lu-pad: 8px;
+      --lu-h: min(
+        66svh,
+        calc(100svh - var(--header-h) - 188px),
+        calc((100vw - 2 * var(--gutter) - 2 * var(--lu-pad)) / var(--lu-ar))
+      );
     }
     :global(.js) .pj-seq__stage {
       grid-template-columns: minmax(0, 1fr);
@@ -361,5 +431,26 @@ const modelAlt = (m: Model) =>
     :global(.js) .pj-seq__ticks,
     :global(.js) .pj-seq__hint { grid-column: 1 / -1; }
     :global(.js) .pj-seq__hint { justify-content: center; }
+  }
+
+  /* Telefono in orizzontale (schermi bassi): resta il palco a tre colonne,
+     ma il modello occupa l'altezza disponibile e i testi si riducono */
+  @media (prefers-reduced-motion: no-preference) and (max-height: 520px) {
+    .pj-seq {
+      --lu-pad: 8px;
+      --lu-h: calc(100svh - var(--header-h) - 36px);
+    }
+    :global(.js) .pj-seq__stage {
+      padding: calc(var(--header-h) + 6px) 0 6px;
+      column-gap: clamp(16px, 4vw, 48px);
+    }
+    :global(.js) .pj-seq__num { font-size: clamp(3.5rem, 24svh, 6.5rem); }
+    :global(.js) .pj-seq__side { font-size: var(--step-2); }
+    :global(.js) .pj-seq__count { font-size: var(--step--1); }
+    :global(.js) .pj-seq__info { gap: var(--space-xs); }
+  }
+  /* colonna laterale troppo stretta per l'indicazione: bastano contatore e tacche */
+  @media (prefers-reduced-motion: no-preference) and (max-height: 520px) and (max-width: 759px) {
+    :global(.js) .pj-seq__hint { display: none; }
   }
 </style>

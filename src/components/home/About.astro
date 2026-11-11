@@ -16,7 +16,7 @@ import { img } from '../../lib/images';
         src={img(site.portrait)}
         alt="Michele Motta in felpa con cappuccio e pantaloni ampi, in piedi in uno stadio vuoto, in bianco e nero"
         widths={[320, 480, 640, 800, 1000, 1280]}
-        sizes="(min-width: 1304px) 500px, (min-width: 1024px) 38vw, (min-width: 760px) 40vw, 64vw"
+        sizes="(min-width: 1304px) 500px, (min-width: 1024px) 38vw, (min-width: 760px) 40vw, (min-width: 430px) 240px, 56vw"
         width={1280}
         format="webp"
         loading="lazy"
@@ -44,11 +44,11 @@ import { img } from '../../lib/images';
 
   .about__grid {
     display: grid;
-    gap: var(--space-xl);
+    gap: var(--space-lg);
   }
 
-  /* telefono: ritratto sopra, contenuto, ritagliato in 4:5 */
-  .about__portrait { width: min(64%, 300px); }
+  /* telefono: ritratto sopra, contenuto (circa un terzo dello schermo), ritagliato in 4:5 */
+  .about__portrait { width: min(56%, 240px); }
   .about__img {
     width: 100%;
     height: auto;
@@ -59,15 +59,16 @@ import { img } from '../../lib/images';
     background: var(--ink-2);
   }
 
+  /* telefono: titolo misurato (3-4 righe), non a tutta scala */
   .about__title {
     margin-top: var(--space-sm);
-    font-size: var(--step-3);
-    line-height: 1.04;
+    font-size: clamp(1.5rem, 1rem + 2.6vw, 2rem);
+    line-height: 1.1;
     color: var(--paper);
     text-wrap: balance;
   }
   .about__prose {
-    margin-top: var(--space-xl);
+    margin-top: var(--space-lg);
     color: var(--text-2);
   }
 
@@ -78,6 +79,8 @@ import { img } from '../../lib/images';
       column-gap: var(--space-xl);
       align-items: start;
     }
+    .about__title { font-size: var(--step-3); line-height: 1.04; }
+    .about__prose { margin-top: var(--space-xl); }
     .about__portrait {
       width: 100%;
       position: sticky;
